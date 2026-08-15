@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Glosario Interactivo - Modo Inmersivo</title>
+  <title>Glosario Interactivo - Nivel Inmersivo</title>
   <style>
     :root {
       --bg: #0b1120;
@@ -36,6 +36,7 @@
       flex-direction: column;
       height: 100vh;
       height: 100dvh;
+      transition: box-shadow 0.5s ease;
     }
 
     /* HEADER Y CONTROLES */
@@ -172,6 +173,15 @@
       50% { box-shadow: 0 0 35px var(--primary), 0 0 60px var(--primary-glow); }
       100% { box-shadow: 0 0 10px var(--primary-glow); }
     }
+    
+    /* Animación de error por dar clic muy rápido */
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px) rotate(-2deg); }
+      50% { transform: translateX(8px) rotate(2deg); }
+      75% { transform: translateX(-8px) rotate(-2deg); }
+    }
+    .shake { animation: shakeError 0.3s ease-in-out !important; }
 
     .card-face {
       position: absolute;
@@ -183,25 +193,33 @@
       border: 2px solid var(--card-border);
       display: flex;
       flex-direction: column;
-      padding: 1.5rem;
       box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-      overflow: hidden;
     }
 
     .card-front {
       align-items: center;
       justify-content: center;
       text-align: center;
-      position: relative;
+      padding: 1.5rem;
+      overflow: hidden;
     }
 
+    /* REPARACIÓN DEL BUG DE SCROLL */
     .card-back {
       transform: rotateY(180deg);
       border-color: var(--primary);
       background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.1), var(--card-bg));
+      /* Flex-start evita que el contenido se corte arriba */
+      justify-content: flex-start;
+      padding: 2.5rem 1.5rem;
       overflow-y: auto;
-      scrollbar-width: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
     }
+
+    /* Ocultar barra de scroll en Chrome/Safari pero permitir deslizar */
+    .card-back::-webkit-scrollbar { width: 4px; }
+    .card-back::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
     .acronym-text {
       font-size: 3.5rem;
@@ -253,7 +271,7 @@
       margin-bottom: 1.5rem;
     }
 
-    /* CONTENIDO REVERSO (NUEVO) */
+    /* CONTENIDO REVERSO */
     .mnemonic-container {
       background: rgba(15, 23, 42, 0.6);
       border-left: 4px solid var(--primary);
@@ -264,6 +282,7 @@
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
+      flex-shrink: 0;
     }
 
     .info-box {
@@ -272,6 +291,7 @@
       border-radius: 12px;
       padding: 0.85rem;
       margin-bottom: 0.75rem;
+      flex-shrink: 0;
     }
 
     .info-title {
@@ -335,20 +355,48 @@
       align-items: center;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: all 0.2s;
+      transition: all 0.3s ease;
       -webkit-tap-highlight-color: transparent;
     }
+    
     .btn-nav:active {
       transform: scale(0.9);
       background: var(--primary);
       color: #000;
     }
-    .btn-nav:disabled {
+    
+    /* Estado bloqueado para los botones (Limitador 3 segundos) */
+    .btn-nav.locked {
       opacity: 0.3;
-      pointer-events: none;
+      filter: grayscale(100%);
+      box-shadow: none;
     }
 
-    /* MODAL DE EXPLICACIÓN DE CAPAS MEJORADO */
+    /* MENSAJE FLOTANTE DE GAMIFICACIÓN (TOAST) */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-150px);
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      color: #000;
+      padding: 1rem 1.5rem;
+      border-radius: 20px;
+      text-align: center;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5);
+      z-index: 2000;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      width: 90%;
+      max-width: 400px;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast-icon { font-size: 2rem; margin-bottom: 0.2rem; }
+
+    /* MODAL DE EXPLICACIÓN DE CAPAS */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -459,6 +507,12 @@
 </head>
 <body>
 
+  <!-- Mensaje de Nivel (Toast) -->
+  <div class="toast" id="toastMsg">
+    <div class="toast-icon">🎉</div>
+    <div id="toastText">¡Nivel 1 Superado!<br>Revela otras 3 para el siguiente nivel.</div>
+  </div>
+
   <!-- HEADER -->
   <div class="header">
     <div class="search-bar">
@@ -523,7 +577,7 @@
     <button class="btn-nav" id="btnNext" onclick="navigateCard(1)" style="background: var(--primary); color: #000; border-color: var(--primary);">❯</button>
   </div>
 
-  <!-- MODAL EXPLICACIÓN CAPAS (TOTALMENTE REDISEÑADO) -->
+  <!-- MODAL EXPLICACIÓN CAPAS -->
   <div class="modal-overlay" id="layerModal">
     <div class="modal-content" id="modalBox">
       <div class="modal-en-title" id="modalEnTitle">PHYSICAL (PHY)</div>
@@ -563,7 +617,6 @@
       const t = audioCtx.currentTime;
 
       if (type === 'swipe') {
-        // Whoosh rápido
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.type = 'sine'; osc.frequency.setValueAtTime(300, t); osc.frequency.exponentialRampToValueAtTime(50, t + 0.15);
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -571,15 +624,37 @@
         osc.start(t); osc.stop(t + 0.15);
       } 
       else if (type === 'flip') {
-        // Brillo mágico corto
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.type = 'triangle'; osc.frequency.setValueAtTime(600, t); osc.frequency.exponentialRampToValueAtTime(1200, t + 0.1);
         osc.connect(gain); gain.connect(audioCtx.destination);
         gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.2, t + 0.05); gain.gain.linearRampToValueAtTime(0, t + 0.2);
         osc.start(t); osc.stop(t + 0.2);
       } 
+      else if (type === 'error') {
+        // Zumbido de error (Botón bloqueado)
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(0.2, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+        osc.start(t); osc.stop(t + 0.2);
+      }
+      else if (type === 'fanfare') {
+        // Sonido de victoria (Gamificación)
+        const notes = [
+          {f: 523.25, time: 0}, {f: 659.25, time: 0.15}, {f: 783.99, time: 0.3}, {f: 1046.50, time: 0.45}
+        ];
+        notes.forEach((n, i) => {
+          let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
+          o.type = 'square'; o.frequency.value = n.f;
+          o.connect(g); g.connect(audioCtx.destination);
+          g.gain.setValueAtTime(0, t + n.time);
+          g.gain.linearRampToValueAtTime(0.15, t + n.time + 0.05);
+          let duration = (i === notes.length - 1) ? 0.8 : 0.15;
+          g.gain.exponentialRampToValueAtTime(0.01, t + n.time + duration);
+          o.start(t + n.time); o.stop(t + n.time + duration);
+        });
+      }
       else if (type === 'PHY') {
-        // Robot / Computadora procesando bits (Blips cuadrados aleatorios)
         for(let i=0; i<5; i++) {
           let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
           o.type = 'square'; o.frequency.value = 300 + Math.random() * 800;
@@ -589,9 +664,7 @@
         }
       } 
       else if (type === 'LIN') {
-        // Link / Conexión física (Doble clic armónico)
-        let f = [600, 900];
-        f.forEach((freq, i) => {
+        [600, 900].forEach((freq, i) => {
           let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
           o.type = 'triangle'; o.frequency.value = freq;
           o.connect(g); g.connect(audioCtx.destination);
@@ -600,7 +673,6 @@
         });
       } 
       else if (type === 'NET') {
-        // Sonar de Red / Ping
         let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
         o.type = 'sine'; o.frequency.value = 800;
         o.connect(g); g.connect(audioCtx.destination);
@@ -608,7 +680,6 @@
         o.start(t); o.stop(t+0.8);
       } 
       else if (type === 'TRA') {
-        // Transferencia de datos rápida
         for(let i=0; i<8; i++) {
           let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
           o.type = 'sine'; o.frequency.value = 1200 + (i%2 * 600);
@@ -618,7 +689,6 @@
         }
       } 
       else if (type === 'APP') {
-        // Acorde placentero moderno (Aplicación iniciada)
         [523.25, 659.25, 783.99].forEach((freq, i) => {
           let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
           o.type = 'sine'; o.frequency.value = freq;
@@ -628,7 +698,6 @@
         });
       }
       else if (type === 'shatter') {
-        // Ruido blanco simulando cristal/impacto
         let bufferSize = audioCtx.sampleRate * 0.4;
         let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         let data = buffer.getChannelData(0);
@@ -645,7 +714,7 @@
     }
 
     // ==========================================
-    // 2. BASE DE DATOS ENRIQUECIDA CON HW/SW
+    // 2. BASE DE DATOS HW/SW
     // ==========================================
     const dataset = [
       {
@@ -670,7 +739,7 @@
         "acronym": "MAC", "english": "Medium Access Control", "spanish": "Control de Acceso al Medio", "pin": "🟠", 
         "img": "Una placa de metal grabada con un número hexadecimal único que identifica a una computadora para siempre.",
         "hw": "Controladores embebidos en Tarjetas de Interfaz de Red (NICs), Switches de Capa 2.",
-        "usr": "El propio hardware de red (transparente para el usuario humano). Administradores de red."
+        "usr": "Hardware de red automatizado. Administradores de red para aplicar filtros."
       },
       {
         "acronym": "IP", "english": "Internet Protocol", "spanish": "Protocolo de Internet", "pin": "🔴", 
@@ -682,7 +751,7 @@
         "acronym": "DHCP", "english": "Dynamic Host Configuration Protocol", "spanish": "Protocolo de Configuración Dinámica de Host", "pin": "🔴", 
         "img": "Una máquina expendedora que entrega direcciones IP temporales a los dispositivos que se conectan.",
         "hw": "Servidores Windows/Linux, Routers Wi-Fi domésticos.",
-        "usr": "Administradores de red (para evitar configurar IPs a mano). Dispositivos móviles."
+        "usr": "Administradores de red. Dispositivos móviles que solicitan conexión automática."
       },
       {
         "acronym": "TCP", "english": "Transmission Control Protocol", "spanish": "Protocolo de Control de Transmisión", "pin": "🟢", 
@@ -707,29 +776,18 @@
         "img": "Una mano pidiendo una hoja de papel (página web) a una biblioteca gigante.",
         "hw": "Servidores Web (Apache, Nginx, IIS), Navegadores (Chrome, Safari).",
         "usr": "Miles de millones de usuarios que navegan por páginas web todos los días."
-      },
-      {
-        "acronym": "Wi-Fi", "english": "Wireless Fidelity", "spanish": "Fidelidad Inalámbrica (IEEE 802.11)", "pin": "🟠 / 🟡", 
-        "img": "Un faro invisible que emite ondas de radio en un restaurante para dar acceso a internet.",
-        "hw": "Puntos de Acceso (AP), Antenas MIMO, Chips de radio en smartphones y laptops.",
-        "usr": "Prácticamente toda persona con un dispositivo móvil o laptop moderna."
       }
-      // Nota: He resumido el dataset para efectos visuales, pero en producción puedes insertar los 59 aquí.
     ];
 
-    // ==========================================
-    // 3. DEFINICIONES Y COLORES DE CAPAS
-    // ==========================================
     const layerDefs = {
       'APP': {
         en: 'APPLICATION (APP)', es: 'Capa de Aplicación', color: 'var(--app-color)',
         desc: 'Es la interfaz directa con el usuario y las aplicaciones de red. Formatea datos y proporciona servicios finales como la web o el correo.',
-        osi: 'Capas 7 (Aplicación), 6 (Presentación) y 5 (Sesión).',
-        tcp: 'Capa 5 (Aplicación). Agrupa las tres capas de OSI en una sola.'
+        osi: 'Capas 7 (Aplicación), 6 (Presentación) y 5 (Sesión).', tcp: 'Capa 5 (Aplicación). Agrupa las tres capas de OSI.'
       },
       'TRA': {
         en: 'TRANSPORT (TRA)', es: 'Capa de Transporte', color: 'var(--tra-color)',
-        desc: 'Garantiza la entrega de mensajes de extremo a extremo. Confiable (TCP) segmentando y asegurando, o rápida (UDP).',
+        desc: 'Garantiza la entrega de mensajes de extremo a extremo. Confiable (TCP) asegurando entrega, o rápida y ligera (UDP).',
         osi: 'Capa 4 (Transporte).', tcp: 'Capa 4 (Transporte). Funciona igual en ambos modelos.'
       },
       'NET': {
@@ -744,14 +802,25 @@
       },
       'PHY': {
         en: 'PHYSICAL (PHY)', es: 'Capa Física', color: 'var(--phy-color)',
-        desc: 'Transmite bits puros en forma de electricidad, luz (fibra) u ondas de radio a través del cableado o el aire.',
+        desc: 'Transmite bits puros en forma de electricidad, luz (fibra) u ondas a través del cableado o el aire.',
         osi: 'Capa 1 (Física).', tcp: 'Capa 1 (Física). Hardware puro y señales.'
       }
     };
 
+    // ==========================================
+    // 3. ESTADOS Y SISTEMAS (Limitador y Gamificación)
+    // ==========================================
     let activeData = [...dataset];
     let currentIndex = 0;
     let currentFilter = 'ALL';
+    
+    // Control de límite de tiempo
+    let isNavigationLocked = false;
+    let lockTimer = null;
+    
+    // Gamificación
+    const viewedCards = new Set();
+    let lastRewardMilestone = 0;
 
     function parsePins(pinStr) {
       const badges = [];
@@ -763,13 +832,46 @@
       return badges;
     }
 
-    // ==========================================
-    // 4. LÓGICA DE INTERFAZ Y ACTUALIZACIÓN
-    // ==========================================
+    function lockNavigation() {
+      isNavigationLocked = true;
+      document.getElementById('btnNext').classList.add('locked');
+      document.getElementById('btnPrev').classList.add('locked');
+      
+      clearTimeout(lockTimer);
+      lockTimer = setTimeout(() => {
+        isNavigationLocked = false;
+        if(currentIndex < activeData.length - 1) document.getElementById('btnNext').classList.remove('locked');
+        if(currentIndex > 0) document.getElementById('btnPrev').classList.remove('locked');
+      }, 3000);
+    }
+
+    function checkGamification() {
+      // Agregamos la tarjeta actual a nuestro registro
+      viewedCards.add(activeData[currentIndex].acronym);
+      
+      // Si llegamos a un múltiplo de 3 y es un récord nuevo
+      if (viewedCards.size % 3 === 0 && viewedCards.size > lastRewardMilestone) {
+        lastRewardMilestone = viewedCards.size;
+        
+        playSound('fanfare');
+        
+        // Mostrar Toast
+        const toast = document.getElementById('toastMsg');
+        const level = viewedCards.size / 3;
+        document.getElementById('toastText').innerHTML = `¡Nivel ${level} Alcanzado!<br>Revela otras 3 tarjetas para subir de nivel.`;
+        toast.classList.add('show');
+        
+        // Destello en el fondo
+        document.body.style.boxShadow = "inset 0 0 80px rgba(56, 189, 248, 0.4)";
+        setTimeout(() => document.body.style.boxShadow = "none", 1000);
+
+        setTimeout(() => toast.classList.remove('show'), 4000);
+      }
+    }
+
     function updateCardView() {
       const flashcard = document.getElementById('flashcard');
       flashcard.classList.remove('flipped'); 
-
       if (activeData.length === 0) return;
 
       const item = activeData[currentIndex];
@@ -802,18 +904,27 @@
       document.getElementById('backHw').textContent = item.hw;
       document.getElementById('backUsers').textContent = item.usr;
 
-      // PROGRESO
+      // PROGRESO Y CONTROLES
       document.getElementById('cardCounter').textContent = `${currentIndex + 1} / ${activeData.length}`;
       document.getElementById('progressBar').style.width = `${((currentIndex + 1) / activeData.length) * 100}%`;
       
-      document.getElementById('btnPrev').disabled = currentIndex === 0;
-      document.getElementById('btnNext').disabled = currentIndex === activeData.length - 1;
+      // Iniciar el candado de 3 segundos para que lean la tarjeta
+      lockNavigation();
     }
 
     function navigateCard(direction) {
       if (activeData.length === 0) return;
       initAudio();
       
+      // Bloqueo si el usuario intenta saltar antes de los 3 segundos
+      if (isNavigationLocked) {
+        playSound('error');
+        const card = document.getElementById('flashcard');
+        card.classList.add('shake');
+        setTimeout(() => card.classList.remove('shake'), 300);
+        return;
+      }
+
       const newIndex = currentIndex + direction;
       if (newIndex < 0 || newIndex >= activeData.length) return;
 
@@ -833,6 +944,9 @@
         card.style.animation = direction > 0 
           ? 'slideInRight 0.3s forwards' 
           : 'slideOutLeft 0.3s reverse forwards';
+          
+        // Gamificación: Verificamos nivel cada vez que se navega a una tarjeta nueva
+        checkGamification();
       }, 250);
     }
 
@@ -850,17 +964,14 @@
     }
 
     // ==========================================
-    // 5. MODAL DE CAPAS Y SHATTER EFECT
+    // 4. MODAL Y EFECTO SHATTER
     // ==========================================
     function openLayerModal(code) {
       initAudio();
       const def = layerDefs[code];
       if(!def) return;
       
-      // Reproducir sonido de capa específico
       playSound(code);
-
-      // Aplicar colores y textos
       currentLayerColor = def.color;
       
       const enTitle = document.getElementById('modalEnTitle');
@@ -883,53 +994,42 @@
       document.getElementById('layerModal').classList.add('active');
     }
 
-    // Evento de clic en Entendido -> Activa el cristal roto
-    document.getElementById('btnEntendido').addEventListener('click', shatterAndClose);
-
-    function shatterAndClose() {
+    document.getElementById('btnEntendido').addEventListener('click', () => {
       initAudio();
-      playSound('shatter'); // Efecto de rotura estática
+      playSound('shatter'); 
 
       const modalBox = document.getElementById('modalBox');
       const rect = modalBox.getBoundingClientRect();
-      
-      // Ocultar caja original instantáneamente
       modalBox.style.visibility = 'hidden';
 
-      // Crear 30 fragmentos (shards)
       for(let i=0; i<30; i++) {
         let shard = document.createElement('div');
         shard.className = 'shard';
         shard.style.setProperty('--shard-color', currentLayerColor);
-        
-        // Posicion inicial aleatoria dentro del modal
         shard.style.left = (rect.left + Math.random() * rect.width) + 'px';
         shard.style.top = (rect.top + Math.random() * rect.height) + 'px';
         
         document.body.appendChild(shard);
-        void shard.offsetWidth; // Force Reflow
+        void shard.offsetWidth; 
         
-        // Animación explosiva
         let tx = (Math.random() - 0.5) * 600;
-        let ty = (Math.random() - 0.5) * 600 - 200; // Tienden a volar hacia arriba/lados
+        let ty = (Math.random() - 0.5) * 600 - 200; 
         let rot = (Math.random() - 0.5) * 1080;
         
         shard.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0)`;
         shard.style.opacity = '0';
         
-        // Limpiar DOM después
         setTimeout(() => shard.remove(), 600);
       }
 
-      // Restaurar el modal en estado oculto para la próxima vez
       setTimeout(() => {
         document.getElementById('layerModal').classList.remove('active');
         modalBox.style.visibility = 'visible';
       }, 400);
-    }
+    });
 
     // ==========================================
-    // 6. BUSCADOR, FILTROS Y GESTOS TÁCTILES
+    // 5. BUSCADOR Y GESTOS TÁCTILES
     // ==========================================
     function applyFilters() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -969,7 +1069,7 @@
       btnElement.style.background = rgbMap[filterCode];
 
       applyFilters();
-      initAudio(); playSound('click');
+      initAudio(); playSound('flip');
     }
 
     // SWIPE
@@ -981,8 +1081,11 @@
       if (touchendX - touchstartX > 50) navigateCard(-1);
     });
 
-    // Iniciar
+    // Iniciar app
     updateCardView();
+    // Añadir tarjeta actual como primera vista
+    viewedCards.add(activeData[0].acronym);
+    
     document.body.addEventListener('touchstart', initAudio, { once: true });
     document.body.addEventListener('click', initAudio, { once: true });
 
