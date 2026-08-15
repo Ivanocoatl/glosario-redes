@@ -128,7 +128,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 1rem;
+      padding: 2.5rem 1rem 1rem 1rem; /* Espacio superior para el contador */
       perspective: 1500px;
       position: relative;
     }
@@ -145,8 +145,9 @@
     .card-container {
       width: 100%;
       max-width: 380px;
-      height: 65vh;
-      max-height: 550px;
+      /* Autoajuste al espacio restante de la pantalla */
+      height: 100%; 
+      max-height: 560px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
@@ -183,8 +184,11 @@
     }
     .shake { animation: shakeError 0.3s ease-in-out !important; }
 
+    /* CARAS DE LA TARJETA (El arreglo del error está aquí en top:0 y left:0) */
     .card-face {
       position: absolute;
+      top: 0;   /* <-- Solución al error de desplazamiento */
+      left: 0;  /* <-- Solución al error de desplazamiento */
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
@@ -204,20 +208,17 @@
       overflow: hidden;
     }
 
-    /* REPARACIÓN DEL BUG DE SCROLL */
     .card-back {
       transform: rotateY(180deg);
       border-color: var(--primary);
       background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.1), var(--card-bg));
-      /* Flex-start evita que el contenido se corte arriba */
-      justify-content: flex-start;
-      padding: 2.5rem 1.5rem;
-      overflow-y: auto;
+      justify-content: flex-start; /* Distribución de arriba hacia abajo */
+      padding: 2rem 1.5rem;
+      overflow-y: auto; /* Scroll de respaldo solo si la pantalla es muy diminuta */
       scrollbar-width: thin;
       scrollbar-color: var(--primary) transparent;
     }
 
-    /* Ocultar barra de scroll en Chrome/Safari pero permitir deslizar */
     .card-back::-webkit-scrollbar { width: 4px; }
     .card-back::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
@@ -271,14 +272,14 @@
       margin-bottom: 1.5rem;
     }
 
-    /* CONTENIDO REVERSO */
+    /* CONTENIDO REVERSO ADAPTATIVO */
     .mnemonic-container {
       background: rgba(15, 23, 42, 0.6);
       border-left: 4px solid var(--primary);
       padding: 1rem;
       border-radius: 0 12px 12px 0;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.4;
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
@@ -307,9 +308,10 @@
     }
 
     .info-text {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #e2e8f0;
       font-weight: 500;
+      line-height: 1.4;
     }
 
     .instruction {
@@ -365,14 +367,13 @@
       color: #000;
     }
     
-    /* Estado bloqueado para los botones (Limitador 3 segundos) */
     .btn-nav.locked {
       opacity: 0.3;
       filter: grayscale(100%);
       box-shadow: none;
     }
 
-    /* MENSAJE FLOTANTE DE GAMIFICACIÓN (TOAST) */
+    /* MENSAJE FLOTANTE DE GAMIFICACIÓN */
     .toast {
       position: fixed;
       top: 20px;
@@ -396,7 +397,7 @@
     }
     .toast-icon { font-size: 2rem; margin-bottom: 0.2rem; }
 
-    /* MODAL DE EXPLICACIÓN DE CAPAS */
+    /* MODAL EXPLICACIÓN CAPAS */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -491,7 +492,7 @@
     }
     .comp-col p { font-weight: 800; font-size: 0.95rem; }
 
-    /* Partículas para el efecto Shatter */
+    /* EFECTO CRISTAL ROTO */
     .shard {
       position: absolute;
       width: 20px; height: 20px;
@@ -502,12 +503,11 @@
       transition: transform 0.6s cubic-bezier(.17,.89,.32,1.28), opacity 0.6s ease;
       z-index: 1001;
     }
-
   </style>
 </head>
 <body>
 
-  <!-- Mensaje de Nivel (Toast) -->
+  <!-- Mensaje de Gamificación -->
   <div class="toast" id="toastMsg">
     <div class="toast-icon">🎉</div>
     <div id="toastText">¡Nivel 1 Superado!<br>Revela otras 3 para el siguiente nivel.</div>
@@ -532,13 +532,13 @@
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <!-- STAGE (ZONA DE TARJETAS) -->
+  <!-- ZONA DE TARJETAS -->
   <div class="stage" id="stageArea">
     <div class="counter" id="cardCounter">1 / 59</div>
     
     <div class="card-container" id="flashcard" onclick="flipCard()">
       
-      <!-- FRENTE DE LA TARJETA -->
+      <!-- FRENTE -->
       <div class="card-face card-front">
         <div class="acronym-text" id="frontAcronym">TCP</div>
         <div class="term-en" id="frontEn" style="font-size: 1rem; color: var(--text-muted); margin-top: 1rem;">Transmission Control Protocol</div>
@@ -548,7 +548,7 @@
         <div class="instruction">¡Toca para voltear!</div>
       </div>
       
-      <!-- REVERSO DE LA TARJETA -->
+      <!-- REVERSO -->
       <div class="card-face card-back">
         <div class="term-en" id="backEn">Transmission Control Protocol</div>
         <div class="term-es" id="backEs">Protocolo de Control de Transmisión</div>
@@ -601,7 +601,7 @@
 
   <script>
     // ==========================================
-    // 1. MOTOR DE AUDIO SINTETIZADO NATIVO
+    // 1. MOTOR DE AUDIO SINTETIZADO
     // ==========================================
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
@@ -631,7 +631,6 @@
         osc.start(t); osc.stop(t + 0.2);
       } 
       else if (type === 'error') {
-        // Zumbido de error (Botón bloqueado)
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t);
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -639,10 +638,7 @@
         osc.start(t); osc.stop(t + 0.2);
       }
       else if (type === 'fanfare') {
-        // Sonido de victoria (Gamificación)
-        const notes = [
-          {f: 523.25, time: 0}, {f: 659.25, time: 0.15}, {f: 783.99, time: 0.3}, {f: 1046.50, time: 0.45}
-        ];
+        const notes = [{f: 523.25, time: 0}, {f: 659.25, time: 0.15}, {f: 783.99, time: 0.3}, {f: 1046.50, time: 0.45}];
         notes.forEach((n, i) => {
           let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
           o.type = 'square'; o.frequency.value = n.f;
@@ -732,7 +728,7 @@
       {
         "acronym": "VPN", "english": "Virtual Private Network", "spanish": "Red Privada Virtual", "pin": "🔴", 
         "img": "Un túnel blindado que atraviesa una carretera pública (Internet) de forma invisible.",
-        "hw": "Firewalls con soporte IPsec, Routers empresariales, Software VPN (OpenVPN, WireGuard).",
+        "hw": "Firewalls con soporte IPsec, Routers empresariales, Software VPN (OpenVPN).",
         "usr": "Trabajadores remotos, corporativos que conectan sucursales, usuarios que evaden censura."
       },
       {
@@ -782,12 +778,12 @@
     const layerDefs = {
       'APP': {
         en: 'APPLICATION (APP)', es: 'Capa de Aplicación', color: 'var(--app-color)',
-        desc: 'Es la interfaz directa con el usuario y las aplicaciones de red. Formatea datos y proporciona servicios finales como la web o el correo.',
+        desc: 'Es la interfaz directa con el usuario y las aplicaciones de red. Formatea datos y proporciona servicios finales.',
         osi: 'Capas 7 (Aplicación), 6 (Presentación) y 5 (Sesión).', tcp: 'Capa 5 (Aplicación). Agrupa las tres capas de OSI.'
       },
       'TRA': {
         en: 'TRANSPORT (TRA)', es: 'Capa de Transporte', color: 'var(--tra-color)',
-        desc: 'Garantiza la entrega de mensajes de extremo a extremo. Confiable (TCP) asegurando entrega, o rápida y ligera (UDP).',
+        desc: 'Garantiza la entrega de mensajes. Confiable (TCP) asegurando entrega, o rápida y ligera (UDP).',
         osi: 'Capa 4 (Transporte).', tcp: 'Capa 4 (Transporte). Funciona igual en ambos modelos.'
       },
       'NET': {
@@ -797,7 +793,7 @@
       },
       'LIN': {
         en: 'DATA LINK (LIN)', es: 'Capa de Enlace', color: 'var(--lin-color)',
-        desc: 'Maneja direcciones físicas (MAC), detección de errores y el acceso al medio físico local (WiFi, Ethernet).',
+        desc: 'Maneja direcciones físicas (MAC), detección de errores y el acceso al medio físico local.',
         osi: 'Capa 2 (Enlace de Datos).', tcp: 'Capa 2 (Enlace).'
       },
       'PHY': {
@@ -808,17 +804,15 @@
     };
 
     // ==========================================
-    // 3. ESTADOS Y SISTEMAS (Limitador y Gamificación)
+    // 3. ESTADOS Y SISTEMAS
     // ==========================================
     let activeData = [...dataset];
     let currentIndex = 0;
     let currentFilter = 'ALL';
     
-    // Control de límite de tiempo
     let isNavigationLocked = false;
     let lockTimer = null;
     
-    // Gamificación
     const viewedCards = new Set();
     let lastRewardMilestone = 0;
 
@@ -842,29 +836,23 @@
         isNavigationLocked = false;
         if(currentIndex < activeData.length - 1) document.getElementById('btnNext').classList.remove('locked');
         if(currentIndex > 0) document.getElementById('btnPrev').classList.remove('locked');
-      }, 3000);
+      }, 3000); // 3 SEGUNDOS DE BLOQUEO
     }
 
     function checkGamification() {
-      // Agregamos la tarjeta actual a nuestro registro
       viewedCards.add(activeData[currentIndex].acronym);
       
-      // Si llegamos a un múltiplo de 3 y es un récord nuevo
       if (viewedCards.size % 3 === 0 && viewedCards.size > lastRewardMilestone) {
         lastRewardMilestone = viewedCards.size;
-        
         playSound('fanfare');
         
-        // Mostrar Toast
         const toast = document.getElementById('toastMsg');
         const level = viewedCards.size / 3;
         document.getElementById('toastText').innerHTML = `¡Nivel ${level} Alcanzado!<br>Revela otras 3 tarjetas para subir de nivel.`;
         toast.classList.add('show');
         
-        // Destello en el fondo
         document.body.style.boxShadow = "inset 0 0 80px rgba(56, 189, 248, 0.4)";
         setTimeout(() => document.body.style.boxShadow = "none", 1000);
-
         setTimeout(() => toast.classList.remove('show'), 4000);
       }
     }
@@ -876,7 +864,6 @@
 
       const item = activeData[currentIndex];
       
-      // FRENTE
       document.getElementById('frontAcronym').textContent = item.acronym;
       document.getElementById('frontEn').textContent = item.english;
       document.getElementById('frontEs').textContent = item.spanish;
@@ -897,18 +884,15 @@
         badgesContainer.appendChild(btn);
       });
 
-      // REVERSO
       document.getElementById('backEn').textContent = item.english;
       document.getElementById('backEs').textContent = item.spanish;
       document.getElementById('backMnemonic').textContent = item.img;
       document.getElementById('backHw').textContent = item.hw;
       document.getElementById('backUsers').textContent = item.usr;
 
-      // PROGRESO Y CONTROLES
       document.getElementById('cardCounter').textContent = `${currentIndex + 1} / ${activeData.length}`;
       document.getElementById('progressBar').style.width = `${((currentIndex + 1) / activeData.length) * 100}%`;
       
-      // Iniciar el candado de 3 segundos para que lean la tarjeta
       lockNavigation();
     }
 
@@ -916,7 +900,6 @@
       if (activeData.length === 0) return;
       initAudio();
       
-      // Bloqueo si el usuario intenta saltar antes de los 3 segundos
       if (isNavigationLocked) {
         playSound('error');
         const card = document.getElementById('flashcard');
@@ -941,11 +924,7 @@
         card.style.animation = 'none'; 
         void card.offsetWidth; 
         
-        card.style.animation = direction > 0 
-          ? 'slideInRight 0.3s forwards' 
-          : 'slideOutLeft 0.3s reverse forwards';
-          
-        // Gamificación: Verificamos nivel cada vez que se navega a una tarjeta nueva
+        card.style.animation = direction > 0 ? 'slideInRight 0.3s forwards' : 'slideOutLeft 0.3s reverse forwards';
         checkGamification();
       }, 250);
     }
@@ -964,7 +943,7 @@
     }
 
     // ==========================================
-    // 4. MODAL Y EFECTO SHATTER
+    // 4. MODAL DE CAPAS Y SHATTER
     // ==========================================
     function openLayerModal(code) {
       initAudio();
@@ -1029,7 +1008,7 @@
     });
 
     // ==========================================
-    // 5. BUSCADOR Y GESTOS TÁCTILES
+    // 5. FILTROS Y GESTOS
     // ==========================================
     function applyFilters() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1072,7 +1051,6 @@
       initAudio(); playSound('flip');
     }
 
-    // SWIPE
     let touchstartX = 0, touchendX = 0;
     document.getElementById('stageArea').addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
     document.getElementById('stageArea').addEventListener('touchend', e => { 
@@ -1081,9 +1059,7 @@
       if (touchendX - touchstartX > 50) navigateCard(-1);
     });
 
-    // Iniciar app
     updateCardView();
-    // Añadir tarjeta actual como primera vista
     viewedCards.add(activeData[0].acronym);
     
     document.body.addEventListener('touchstart', initAudio, { once: true });
