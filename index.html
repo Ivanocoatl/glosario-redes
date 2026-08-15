@@ -174,7 +174,6 @@
       100% { box-shadow: 0 0 10px var(--primary-glow); }
     }
     
-    /* Animación de error por dar clic muy rápido */
     @keyframes shakeError {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-8px) rotate(-2deg); }
@@ -204,12 +203,10 @@
       overflow: hidden;
     }
 
-    /* REPARACIÓN DEL BUG DE SCROLL */
     .card-back {
       transform: rotateY(180deg);
       border-color: var(--primary);
       background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.1), var(--card-bg));
-      /* Flex-start evita que el contenido se corte arriba */
       justify-content: flex-start;
       padding: 2.5rem 1.5rem;
       overflow-y: auto;
@@ -217,12 +214,11 @@
       scrollbar-color: var(--primary) transparent;
     }
 
-    /* Ocultar barra de scroll en Chrome/Safari pero permitir deslizar */
     .card-back::-webkit-scrollbar { width: 4px; }
     .card-back::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
     .acronym-text {
-      font-size: 3.5rem;
+      font-size: 3rem;
       font-weight: 900;
       font-family: monospace;
       background: linear-gradient(135deg, #fff, #94a3b8);
@@ -257,7 +253,7 @@
     .badge:active { transform: scale(0.9); }
 
     .term-en {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--primary);
       margin-bottom: 0.2rem;
@@ -265,13 +261,12 @@
     }
 
     .term-es {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       text-align: center;
       margin-bottom: 1.5rem;
     }
 
-    /* CONTENIDO REVERSO */
     .mnemonic-container {
       background: rgba(15, 23, 42, 0.6);
       border-left: 4px solid var(--primary);
@@ -332,7 +327,6 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
-    /* CONTROLES INFERIORES */
     .controls {
       display: flex;
       justify-content: space-between;
@@ -356,7 +350,6 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
-      -webkit-tap-highlight-color: transparent;
     }
     
     .btn-nav:active {
@@ -365,14 +358,12 @@
       color: #000;
     }
     
-    /* Estado bloqueado para los botones (Limitador 3 segundos) */
     .btn-nav.locked {
       opacity: 0.3;
       filter: grayscale(100%);
       box-shadow: none;
     }
 
-    /* MENSAJE FLOTANTE DE GAMIFICACIÓN (TOAST) */
     .toast {
       position: fixed;
       top: 20px;
@@ -396,7 +387,6 @@
     }
     .toast-icon { font-size: 2rem; margin-bottom: 0.2rem; }
 
-    /* MODAL DE EXPLICACIÓN DE CAPAS */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -431,7 +421,7 @@
     }
     
     .modal-en-title {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 900;
       font-family: monospace;
       letter-spacing: -1px;
@@ -491,7 +481,6 @@
     }
     .comp-col p { font-weight: 800; font-size: 0.95rem; }
 
-    /* Partículas para el efecto Shatter */
     .shard {
       position: absolute;
       width: 20px; height: 20px;
@@ -502,18 +491,15 @@
       transition: transform 0.6s cubic-bezier(.17,.89,.32,1.28), opacity 0.6s ease;
       z-index: 1001;
     }
-
   </style>
 </head>
 <body>
 
-  <!-- Mensaje de Nivel (Toast) -->
   <div class="toast" id="toastMsg">
     <div class="toast-icon">🎉</div>
     <div id="toastText">¡Nivel 1 Superado!<br>Revela otras 3 para el siguiente nivel.</div>
   </div>
 
-  <!-- HEADER -->
   <div class="header">
     <div class="search-bar">
       <span class="search-icon">🔍</span>
@@ -532,13 +518,10 @@
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <!-- STAGE (ZONA DE TARJETAS) -->
   <div class="stage" id="stageArea">
-    <div class="counter" id="cardCounter">1 / 59</div>
+    <div class="counter" id="cardCounter">1 / 1</div>
     
     <div class="card-container" id="flashcard" onclick="flipCard()">
-      
-      <!-- FRENTE DE LA TARJETA -->
       <div class="card-face card-front">
         <div class="acronym-text" id="frontAcronym">TCP</div>
         <div class="term-en" id="frontEn" style="font-size: 1rem; color: var(--text-muted); margin-top: 1rem;">Transmission Control Protocol</div>
@@ -548,7 +531,6 @@
         <div class="instruction">¡Toca para voltear!</div>
       </div>
       
-      <!-- REVERSO DE LA TARJETA -->
       <div class="card-face card-back">
         <div class="term-en" id="backEn">Transmission Control Protocol</div>
         <div class="term-es" id="backEs">Protocolo de Control de Transmisión</div>
@@ -571,13 +553,11 @@
     </div>
   </div>
 
-  <!-- CONTROLES -->
   <div class="controls">
     <button class="btn-nav" id="btnPrev" onclick="navigateCard(-1)">❮</button>
     <button class="btn-nav" id="btnNext" onclick="navigateCard(1)" style="background: var(--primary); color: #000; border-color: var(--primary);">❯</button>
   </div>
 
-  <!-- MODAL EXPLICACIÓN CAPAS -->
   <div class="modal-overlay" id="layerModal">
     <div class="modal-content" id="modalBox">
       <div class="modal-en-title" id="modalEnTitle">PHYSICAL (PHY)</div>
@@ -600,9 +580,6 @@
   </div>
 
   <script>
-    // ==========================================
-    // 1. MOTOR DE AUDIO SINTETIZADO NATIVO
-    // ==========================================
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let currentLayerColor = '#ffffff';
@@ -631,7 +608,6 @@
         osc.start(t); osc.stop(t + 0.2);
       } 
       else if (type === 'error') {
-        // Zumbido de error (Botón bloqueado)
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t);
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -639,7 +615,6 @@
         osc.start(t); osc.stop(t + 0.2);
       }
       else if (type === 'fanfare') {
-        // Sonido de victoria (Gamificación)
         const notes = [
           {f: 523.25, time: 0}, {f: 659.25, time: 0.15}, {f: 783.99, time: 0.3}, {f: 1046.50, time: 0.45}
         ];
@@ -713,803 +688,141 @@
       }
     }
 
-    // ==========================================
-    // 2. BASE DE DATOS HW/SW
-    // ==========================================
+    // BASE DE DATOS UNIFICADA (TODOS LOS BLOQUES CORRECTAMENTE ESTRUCTURADOS)
     const dataset = [
-  const dataset = [
-      {
-        "acronym": "PAN", "english": "Personal Area Network", "spanish": "Red de Área Personal", "pin": "🟡 / 🟠", 
-        "img": "Un aura azul uniendo un reloj inteligente, un teléfono y audífonos.",
-        "hw": "Módulos Bluetooth, Infrarrojos, Smartwatches, Auriculares inalámbricos.",
-        "usr": "Cualquier individuo en su espacio personal de hasta 10 metros."
-      },
-      {
-        "acronym": "LAN", "english": "Local Area Network", "spanish": "Red de Área Local", "pin": "🟠", 
-        "img": "Un edificio con cables de luz uniendo computadoras en un solo nudo central.",
-        "hw": "Switches Ethernet, Cables UTP, Puntos de Acceso (AP), Tarjetas de Red (NIC).",
-        "usr": "Empleados de oficina, familias en el hogar, estudiantes en un laboratorio."
-      },
-      {
-        "acronym": "MAN", "english": "Metropolitan Area Network", "spanish": "Red de Área Metropolitana", "pin": "🔴", 
-        "img": "Mapa de una ciudad con líneas de fibra óptica uniendo edificios distantes.",
-        "hw": "Routers de núcleo, Switches de alta velocidad, Enlaces de fibra óptica metropolitana.",
-        "usr": "Instituciones gubernamentales, universidades con múltiples campus urbanos."
-      },
-      {
-        "acronym": "WAN", "english": "Wide Area Network", "spanish": "Red de Área Amplia", "pin": "🔴", 
-        "img": "Un satélite enviando luz a través de un océano entre dos continentes.",
-        "hw": "Routers de borde, Cables submarinos, Enlaces satelitales, Conexiones MPLS.",
-        "usr": "Empresas multinacionales, operadoras de telecomunicaciones, gobiernos."
-      },
-      {
-        "acronym": "VLAN", "english": "Virtual Local Area Network", "spanish": "Red de Área Local Virtual", "pin": "🟠", 
-        "img": "Un switch de cristal dividido por láminas de colores que separan el tráfico.",
-        "hw": "Switches administrables compatibles con IEEE 802.1Q.",
-        "usr": "Administradores de red para segmentar tráfico corporativo por seguridad o rendimiento."
-      },
-      {
-        "acronym": "VPN", "english": "Virtual Private Network", "spanish": "Red Privada Virtual", "pin": "🔴", 
-        "img": "Un túnel blindado que cruza una carretera pública de forma invisible.",
-        "hw": "Firewalls con soporte IPsec, Routers empresariales, Software VPN (OpenVPN).",
-        "usr": "Trabajadores remotos, corporativos que conectan sucursales, usuarios que evaden censura."
-      },
-      {
-        "acronym": "ISP", "english": "Internet Service Provider", "spanish": "Proveedor de Servicios de Internet", "pin": "🔴", 
-        "img": "Una torre de control gigante distribuyendo \"llaves\" de acceso a miles de hogares.",
-        "hw": "CMTS, OLTs de fibra óptica, Routers de Borde de Gran Escala, Servidores RADIUS.",
-        "usr": "Hogares, empresas y cualquier usuario final que contrate acceso a Internet."
-      },
-      {
-        "acronym": "AS", "english": "Autonomous System", "spanish": "Sistema Autónomo", "pin": "🔴", 
-        "img": "Un castillo amurallado con su propio ejército de mensajeros internos.",
-        "hw": "Routers de alta capacidad ejecutando BGP en el núcleo de Internet.",
-        "usr": "Grandes ISPs, universidades y corporaciones globales con numeración propia."
-      },
-      {
-        "acronym": "IXP", "english": "Internet Exchange Point", "spanish": "Punto de Intercambio de Internet", "pin": "🔴 / 🟠", 
-        "img": "Una estación de trenes futurista donde redes de distintos ISP intercambian datos.",
-        "hw": "Switches Ethernet de centro de datos de alta densidad (100G/400G).",
-        "usr": "ISPs y proveedores de contenido para interconectar tráfico de forma directa."
-      },
-      {
-        "acronym": "CDN", "english": "Content Delivery Network", "spanish": "Red de Distribución de Contenido", "pin": "🔵", 
-        "img": "Almacenes locales (servidores) entregando paquetes de video cerca del usuario.",
-        "hw": "Servidores perimetrales de caché ubicados estratégicamente cerca de los usuarios.",
-        "usr": "Plataformas de streaming, portales de noticias y redes sociales."
-      },
-      {
-        "acronym": "POP", "english": "Point of Presence", "spanish": "Punto de Presencia", "pin": "🔴", 
-        "img": "Un buzón de correos brillante en la esquina de una red de ISP.",
-        "hw": "Routers de acceso, Switches de agregación, Bastidores de telecomunicaciones.",
-        "usr": "Proveedores de internet para interconectar clientes locales con la red troncal."
-      },
-      {
-        "acronym": "FTTH", "english": "Fiber To The Home", "spanish": "Fibra hasta el Hogar", "pin": "🟡", 
-        "img": "Un hilo de vidrio transparente entrando directo por el muro de una casa.",
-        "hw": "Cable de fibra óptica monomodo, rosetas ópticas, ONTs.",
-        "usr": "Usuarios residenciales que disfrutan de internet de ultra alta velocidad."
-      },
-      {
-        "acronym": "PON", "english": "Passive Optical Network", "spanish": "Red Óptica Pasiva", "pin": "🟡", 
-        "img": "Un prisma de cristal que divide un láser en múltiples rayos sin usar electricidad.",
-        "hw": "Splitters ópticos pasivos, OLT, ONUs.",
-        "usr": "Operadores de telecomunicaciones para llevar servicios de fibra eficientes."
-      },
-      {
-        "acronym": "GPON", "english": "Gigabit-capable PON", "spanish": "Red Óptica Pasiva con Capacidad de Gigabit", "pin": "🟡", 
-        "img": "El mismo prisma emitiendo ráfagas de luz ultra rápidas con un cronómetro de oro.",
-        "hw": "Equipos OLT y ONT compatibles con estándares Gigabit GPON.",
-        "usr": "Proveedores de internet de fibra óptica de alta capacidad residencial."
-      },
-      {
-        "acronym": "HFC", "english": "Hybrid Fiber Coax", "spanish": "Híbrido de Fibra y Coaxial", "pin": "🟡", 
-        "img": "Un cable de cobre grueso conectado a un nodo de luz brillante (fibra) en una esquina.",
-        "hw": "Nodos ópticos, Cable coaxial de alta calidad, Cablemódems.",
-        "usr": "Proveedores de televisión por cable e internet de banda ancha tradicional."
-      },
-      {
-        "acronym": "SONET", "english": "Synchronous Optical Network", "spanish": "Red Óptica Síncrona", "pin": "🟡", 
-        "img": "Un anillo de fibra óptica con contenedores de datos sincronizados por un reloj atómico.",
-        "hw": "Multiplexores ópticos add-drop (ADM), Relojes atómicos de red.",
-        "usr": "Grandes operadores de telecomunicaciones para redes troncales."
-      },
-      {
-        "acronym": "SDH", "english": "Synchronous Digital Hierarchy", "spanish": "Jerarquía Digital Síncrona", "pin": "🟡", 
-        "img": "Estructura de SONET pero con el logo de estándares internacionales (ITU).",
-        "hw": "Multiplexores SDH de alta velocidad para transporte digital.",
-        "usr": "Operadores de telecomunicaciones globales bajo estándares europeos e internacionales."
-      },
-      {
-        "acronym": "ADSL", "english": "Asymmetric Digital Subscriber Line", "spanish": "Línea de Suscriptor Digital Asimétrica", "pin": "🟡", 
-        "img": "Un cable de teléfono antiguo con un tobogán de bajada enorme y uno de subida pequeño.",
-        "hw": "Modems DSL, Splitters telefónicos, DSLAMs en la central.",
-        "usr": "Hogares en zonas rurales o con infraestructura telefónica clásica."
-      },
-      {
-        "acronym": "DSL", "english": "Digital Subscriber Line", "spanish": "Línea de Suscriptor Digital", "pin": "🟡", 
-        "img": "El mismo cable de cobre transportando bits digitales a alta velocidad.",
-        "hw": "Modems DSL, Transceptores en pares de cobre tradicionales.",
-        "usr": "Usuarios residenciales y de oficinas que utilizan la red telefónica para datos."
-      },
-      {
-        "acronym": "DSLAM", "english": "DSL Access Multiplexer", "spanish": "Multiplexor de Acceso DSL", "pin": "🟡", 
-        "img": "Un dispositivo en la central telefónica que une miles de cables de cobre en una fibra.",
-        "hw": "Chasis DSLAM con tarjetas multiplexoras en centrales de telecomunicaciones.",
-        "usr": "Proveedores de servicios de internet telefónico."
-      },
-      {
-        "acronym": "UTP", "english": "Unshielded Twisted Pair", "spanish": "Par Trenzado no Apantallado", "pin": "🟡", 
-        "img": "Ocho hilos de cobre trenzados como trenzas de colores dentro de una funda de plástico azul.",
-        "hw": "Cables de red categoría 5e, 6, 6A con conectores RJ-45.",
-        "usr": "Instalaciones de red en oficinas, hogares y centros de datos tradicionales."
-      },
-      {
-        "acronym": "STP", "english": "Shielded Twisted Pair", "spanish": "Par Trenzado Apantallado", "pin": "🟡", 
-        "img": "El mismo cable UTP pero envuelto en una armadura metálica brillante contra interferencias.",
-        "hw": "Cables de cobre blindados con malla metálica y conectores blindados.",
-        "usr": "Entornos industriales con alta interferencia electromagnética."
-      },
-      {
-        "acronym": "NIC", "english": "Network Interface Card", "spanish": "Tarjeta de Interfaz de Red", "pin": "🟠 / 🟡", 
-        "img": "Tarjeta de circuitos con un puerto Ethernet; el traductor entre PC y cable.",
-        "hw": "Tarjetas PCIe Ethernet, Controladores Wi-Fi integrados en placas base.",
-        "usr": "Cualquier ordenador, servidor o dispositivo que requiera conectarse a una red."
-      },
-      {
-        "acronym": "RFID", "english": "Radio Frequency Identification", "spanish": "Identificación por Radiofrecuencia", "pin": "🟡", 
-        "img": "Una antena diminuta en espiral que brilla al ser tocada por ondas invisibles.",
-        "hw": "Lectores RFID, Etiquetas (tags) inteligentes con microchip.",
-        "usr": "Control de inventarios, logística, peajes automáticos y control de acceso."
-      },
-      {
-        "acronym": "USB", "english": "Universal Serial Bus", "spanish": "Bus Serie Universal", "pin": "🟡 / 🟠", 
-        "img": "Un conector rectangular que usa \"relleno de bits\" para sincronizar datos.",
-        "hw": "Controladores USB, Puertos y cables de conexión periférica.",
-        "usr": "Cualquier usuario conectando periféricos (mouse, teclados, memorias) a equipos."
-      },
-      {
-        "acronym": "NRZ", "english": "Non-Return-to-Zero", "spanish": "No Retorno a Cero", "pin": "🟡", 
-        "img": "Una onda cuadrada simple que se mantiene arriba para el \"1\" y abajo para el \"0\".",
-        "hw": "Circuitos de transmisión de capa física y modulación digital básica.",
-        "usr": "Sistemas de comunicación digital y diseño de hardware de transmisión."
-      },
-      {
-        "acronym": "NRZI", "english": "Non-Return-to-Zero Inverted", "spanish": "No Retorno a Cero Invertido", "pin": "🟡", 
-        "img": "La misma onda pero cambiando de dirección solo cuando aparece un \"1\".",
-        "hw": "Codificadores de capa física en interfaces seriales y USB.",
-        "usr": "Sistemas de transmisión digital para sincronización de reloj."
-      },
-      {
-        "acronym": "PCM", "english": "Pulse Code Modulation", "spanish": "Modulación por Codificación de Impulsos", "pin": "🟡", 
-        "img": "Una onda de voz humana convertida en una serie de barras binarias verticales.",
-        "hw": "Códecs de audio digital, Conversores Analógico-Digital (ADC).",
-        "usr": "Telefonía digital y sistemas de procesamiento de señales de voz."
-      },
-      {
-        "acronym": "SNR", "english": "Signal-to-Noise Ratio", "spanish": "Relación Señal-Ruido", "pin": "🟡", 
-        "img": "Un rayo de luz (señal) tratando de atravesar una nube de estática gris (ruido).",
-        "hw": "Instrumentos de medición de redes, osciloscopios y analizadores de espectro.",
-        "usr": "Ingenieros de telecomunicaciones para evaluar la calidad de un enlace físico."
-      },
-      {
-        "acronym": "TDM", "english": "Time-Division Multiplexing", "spanish": "Multiplexión por División de Tiempo", "pin": "🟡", 
-        "img": "Un carrusel donde cada asiento lleva un trozo de datos de un usuario distinto.",
-        "hw": "Multiplexores digitales en redes troncales de telefonía y transmisión.",
-        "usr": "Operadores de redes para compartir un medio físico entre múltiples canales."
-      },
-      {
-        "acronym": "FDM", "english": "Frequency-Division Multiplexing", "spanish": "Multiplexión por División de Frecuencia", "pin": "🟡", 
-        "img": "Una carretera de varios carriles donde cada carril es de un color (frecuencia) diferente.",
-        "hw": "Multiplexores analógicos, Transmisores de radio y televisión tradicional.",
-        "usr": "Sistemas de radiodifusión y transmisión de banda ancha analógica."
-      },
-      {
-        "acronym": "WDM", "english": "Wavelength Division Multiplexing", "spanish": "Multiplexión por División de Longitud de Onda", "pin": "🟡", 
-        "img": "Un arcoíris de datos viajando a través de un solo hilo de vidrio.",
-        "hw": "Multiplexores ópticos, Módulos láser de múltiples longitudes de onda.",
-        "usr": "Operadores de redes de fibra óptica de alta capacidad."
-      },
-      {
-        "acronym": "OFDM", "english": "Orthogonal Frequency Division Multiplexing", "spanish": "Multiplexión por División de Frecuencia Ortogonal", "pin": "🟡", 
-        "img": "Múltiples ondas de radio entrelazadas perfectamente sin chocar entre sí.",
-        "hw": "Chips de procesamiento digital de señales para Wi-Fi y LTE/5G.",
-        "usr": "Dispositivos inalámbricos modernos (Wi-Fi, 4G, 5G, TV digital)."
-      },
-      {
-        "acronym": "CDMA", "english": "Code Division Multiple Access", "spanish": "Acceso Múltiple por División de Código", "pin": "🟡 / 🟠", 
-        "img": "Personas en una fiesta hablando distintos idiomas; tú solo entiendes el tuyo (tu código).",
-        "hw": "Estaciones base celulares y terminales móviles compatibles con CDMA.",
-        "usr": "Operadores de telefonía móvil de tercera generación (3G)."
-      },
-      {
-        "acronym": "LEO", "english": "Low Earth Orbit", "spanish": "Órbita Terrestre Baja", "pin": "🟡", 
-        "img": "Un satélite girando muy cerca de la Tierra como un corredor de pista.",
-        "hw": "Constelaciones de satélites artificiales de baja altura, Antenas direccionales.",
-        "usr": "Servicios de internet satelital de baja latencia (Starlink)."
-      },
-      {
-        "acronym": "MEO", "english": "Medium Earth Orbit", "spanish": "Órbita Terrestre Media", "pin": "🟡", 
-        "img": "Un satélite a altura media, moviéndose más lento que el LEO.",
-        "hw": "Satélites de navegación y comunicación de órbita media.",
-        "usr": "Sistemas de posicionamiento global (GPS) y telecomunicaciones."
-      },
-      {
-        "acronym": "GEO", "english": "Geostationary Earth Orbit", "spanish": "Órbita Terrestre Geoestacionaria", "pin": "🟡", 
-        "img": "Un satélite que parece \"flotar\" fijo sobre un solo punto del ecuador.",
-        "hw": "Satélites geoestacionarios de gran tamaño, Antenas parabólicas fijas.",
-        "usr": "Servicios de radiodifusión de televisión y telecomunicaciones satelitales fijas."
-      },
-      {
-        "acronym": "BOC", "english": "Bell Operating Companies", "spanish": "Compañías Operativas de Bell", "pin": "🟡", 
-        "img": "El logo clásico de una campana sobre la red telefónica antigua.",
-        "hw": "Infraestructura de conmutación telefónica tradicional heredada.",
-        "usr": "Empresas históricas de telecomunicaciones de Estados Unidos."
-      },
-      {
-        "acronym": "LATA", "english": "Local Access and Transport Areas", "spanish": "Áreas de Acceso Local y de Transporte", "pin": "🟡", 
-        "img": "Círculos geográficos que delimitan dónde termina una red telefónica local.",
-        "hw": "Sistemas de enrutamiento y tarificación de operadoras telefónicas.",
-        "usr": "Compañías de telecomunicaciones para gestionar llamadas locales y de larga distancia."
-      },
-      {
-        "acronym": "DMT", "english": "Discrete MultiTone", "spanish": "Multitono Discreto", "pin": "🟡", 
-        "img": "La base matemática de ADSL; 256 minicanales de música digital.",
-        "hw": "Modems ADSL con procesadores de modulación por tonos discretos.",
-        "usr": "Sistemas de banda ancha sobre línea telefónica de cobre."
-      },
-      {
-        "acronym": "MAC", "english": "Medium Access Control", "spanish": "Control de Acceso al Medio", "pin": "🟠", 
-        "img": "Una placa de metal grabada con 12 dígitos hexadecimales únicos e imborrables.",
-        "hw": "Controladores embebidos en Tarjetas de Interfaz de Red (NICs), Switches de Capa 2.",
-        "usr": "Hardware de red automatizado. Administradores de red para aplicar filtros."
-      },
-      {
-        "acronym": "ARP", "english": "Address Resolution Protocol", "spanish": "Protocolo de Resolución de Direcciones", "pin": "🟠", 
-        "img": "Un megáfono preguntando: \"Tengo la IP, ¿quién me da su nombre físico MAC?\".",
-        "hw": "Implementado en la pila de red del sistema operativo de los hosts.",
-        "usr": "Dispositivos en una red local para descubrir direcciones físicas de vecinos."
-      },
-      {
-        "acronym": "LLC", "english": "Logical Link Control", "spanish": "Control de Enlace Lógico", "pin": "🟠", 
-        "img": "Una capa de pegamento invisible que une el hardware con el software de red.",
-        "hw": "Implementado por software en controladores de red (Subcapa IEEE 802.2).",
-        "usr": "Sistemas operativos y tarjetas de red para entrelazar protocolos superiores."
-      },
-      {
-        "acronym": "PPP", "english": "Point-to-Point Protocol", "spanish": "Protocolo Punto a Punto", "pin": "🟠", 
-        "img": "Dos manos robóticas estrechándose a través de un cable directo y exclusivo.",
-        "hw": "Routers configurados para enlaces seriales o conexiones PPPoE de banda ancha.",
-        "usr": "Proveedores de acceso para autenticar usuarios de internet residencial."
-      },
-      {
-        "acronym": "CRC", "english": "Cyclic Redundancy Check", "spanish": "Comprobación de Redundancia Cíclica", "pin": "🟠", 
-        "img": "Un sello de garantía matemático al final de un paquete para detectar cambios.",
-        "hw": "Procesadores de red y circuitos integrados en NICs.",
-        "usr": "Dispositivos receptores para validar la integridad de las tramas de red."
-      },
-      {
-        "acronym": "CSMA/CD", "english": "Carrier Sense Multiple Access with Collision Detection", "spanish": "Acceso Múltiple con Detección de Colisiones", "pin": "🟠", 
-        "img": "Dos personas deteniéndose al chocar sus voces en un pasillo estrecho.",
-        "hw": "Interfaces de red Ethernet half-duplex tradicionales.",
-        "usr": "Redes locales antiguas basadas en hubs o cables coaxiales compartidos."
-      },
-      {
-        "acronym": "CSMA/CA", "english": "Carrier Sense Multiple Access with Collision Avoidance", "spanish": "Acceso Múltiple con Evitación de Colisiones", "pin": "🟠", 
-        "img": "Un semáforo inalámbrico que pide permiso antes de dejar pasar datos al aire.",
-        "hw": "Routers Wi-Fi y tarjetas de red inalámbricas (802.11).",
-        "usr": "Dispositivos conectados a redes inalámbricas para evitar interferencias por el aire."
-      },
-      {
-        "acronym": "RTS", "english": "Request to Send", "spanish": "Solicitud de Envío", "pin": "🟠", 
-        "img": "Un dispositivo levantando la mano para pedir permiso de hablar en WiFi.",
-        "hw": "Adaptadores de red inalábrica y puntos de acceso Wi-Fi.",
-        "usr": "Dispositivos inalámbricos para gestionar el acceso al medio en entornos congestionados."
-      },
-      {
-        "acronym": "CTS", "english": "Clear to Send", "spanish": "Preparado para Enviar", "pin": "🟠", 
-        "img": "El Punto de Acceso respondiendo: \"Adelante, el canal es tuyo por 10ms\".",
-        "hw": "Puntos de acceso Wi-Fi y estaciones cliente.",
-        "usr": "Controladores de red inalámbrica para coordinar la transmisión de datos."
-      },
-      {
-        "acronym": "NAV", "english": "Network Allocation Vector", "spanish": "Vector de Asignación de Red", "pin": "🟠", 
-        "img": "Un cronómetro interno en cada host que cuenta cuánto tiempo debe guardar silencio.",
-        "hw": "Implementado en el firmware de los adaptadores de red inalámbrica.",
-        "usr": "Tarjetas Wi-Fi para control de portadora virtual."
-      },
-      {
-        "acronym": "SIFS", "english": "Short Inter-frame Spacing", "spanish": "Espaciado Corto entre Tramas", "pin": "🟠", 
-        "img": "Un micro-espacio de silencio absoluto tras recibir un paquete ACK.",
-        "hw": "Controladores de hardware de red inalámbrica.",
-        "usr": "Protocolos MAC inalámbricos para priorizar respuestas inmediatas."
-      },
-      {
-        "acronym": "DIFS", "english": "Distributed Inter-frame Space", "spanish": "Espaciado entre Tramas DCF", "pin": "🟠", 
-        "img": "Un espacio de silencio más largo necesario antes de intentar enviar datos nuevos.",
-        "hw": "Adaptadores Wi-Fi y puntos de acceso.",
-        "usr": "Hosts competidores en redes inalámbricas antes de iniciar una transmisión."
-      },
-      {
-        "acronym": "SSID", "english": "Service Set Identifier", "spanish": "Identificador de Conjunto de Servicio", "pin": "🟠", 
-        "img": "Un cartel de neón con el nombre de la red WiFi (ej: \"Internet_Gratis\").",
-        "hw": "Puntos de acceso Wi-Fi que transmiten la baliza de red.",
-        "usr": "Usuarios móviles al buscar y conectarse a redes inalámbricas disponibles."
-      },
-      {
-        "acronym": "WEP", "english": "Wired Equivalent Privacy", "spanish": "Privacidad Equivalente al Cable", "pin": "🟠", 
-        "img": "Una llave de cristal vieja y rota; fácil de abrir para intrusos.",
-        "hw": "Routers y dispositivos Wi-Fi antiguos (tecnología obsoleta).",
-        "usr": "Sistemas heredados con seguridad inalámbrica vulnerable."
-      },
-      {
-        "acronym": "WPA", "english": "WiFi Protected Access", "spanish": "Acceso Protegido WiFi", "pin": "🟠", 
-        "img": "Una llave de metal más resistente que reemplazó a WEP.",
-        "hw": "Equipos de red inalámbrica de transición.",
-        "usr": "Usuarios que requerían mayor seguridad que WEP antes de WPA2."
-      },
-      {
-        "acronym": "WPA2", "english": "WiFi Protected Access 2", "spanish": "Acceso Protegido WiFi 2", "pin": "🟠", 
-        "img": "Un candado digital moderno y robusto basado en AES.",
-        "hw": "Routers, puntos de acceso y dispositivos inalámbricos modernos.",
-        "usr": "Usuarios y administradores para proteger redes Wi-Fi con cifrado seguro."
-      },
-      {
-        "acronym": "CCMP", "english": "Counter Mode with CBC-MAC Protocol", "spanish": "Protocolo de Modo Contador con CBC-MAC", "pin": "🟠", 
-        "img": "El motor interno ultra seguro que hace que WPA2 funcione.",
-        "hw": "Aceleradores criptográficos por hardware en chips Wi-Fi.",
-        "usr": "Protocolo de cifrado subyacente de WPA2 para garantizar confidencialidad e integridad."
-      },
-      {
-        "acronym": "TKIP", "english": "Temporal Key Integrity Protocol", "spanish": "Protocolo de Integridad de Clave Temporal", "pin": "🟠", 
-        "img": "Una llave que cambia de forma cada pocos segundos para confundir al espía.",
-        "hw": "Chips de red inalámbrica compatibles con estándares de transición WPA.",
-        "usr": "Sistemas que necesitaban parchar la seguridad de WEP temporalmente."
-      },
-      {
-        "acronym": "ARQ", "english": "Automatic Repeat Request", "spanish": "Solicitud Automática de Repetición", "pin": "🟠", 
-        "img": "Un receptor gritando: \"¡No entendí, mándalo otra vez!\".",
-        "hw": "Controladores de enlace de datos en tarjetas de red y módems.",
-        "usr": "Sistemas de comunicación para control de errores mediante retransmisión."
-      },
-      {
-        "acronym": "NCP", "english": "Network Control Protocol", "spanish": "Protocolo de Control de Red", "pin": "🟠", 
-        "img": "El diplomático de PPP que negocia qué idioma (IP, IPv6) se hablará.",
-        "hw": "Implementado en software de conexión de acceso remoto (Routers y PCs).",
-        "usr": "Administradores de red y sistemas en conexiones punto a punto."
-      },
-      {
-        "acronym": "IP", "english": "Internet Protocol", "spanish": "Protocolo de Internet", "pin": "🔴", 
-        "img": "Un sobre postal universal que puede viajar por cualquier medio.",
-        "hw": "Routers, Servidores, Sistemas Operativos (Pila TCP/IP).",
-        "usr": "Todos los dispositivos conectados a Internet a nivel global."
-      },
-      {
-        "acronym": "IPv4", "english": "IP version 4", "spanish": "Protocolo de Internet versión 4", "pin": "🔴", 
-        "img": "Un sistema de 32 bits (4 bloques) que se está agotando.",
-        "hw": "Routers y dispositivos de red globales.",
-        "usr": "La gran mayoría de sistemas heredados e internet tradicional."
-      },
-      {
-        "acronym": "IPv6", "english": "IP version 6", "spanish": "Protocolo de Internet versión 6", "pin": "🔴", 
-        "img": "Un sistema masivo de 128 bits con direcciones infinitas para el futuro.",
-        "hw": "Hardware de red moderno con soporte nativo de doble pila.",
-        "usr": "Nuevas infraestructuras de internet, redes móviles modernas e IoT."
-      },
-      {
-        "acronym": "NAT", "english": "Network Address Translation", "spanish": "Traducción de Direcciones de Red", "pin": "🔴", 
-        "img": "Un recepcionista de hotel recibiendo paquetes para muchos huéspedes con una sola IP externa.",
-        "hw": "Routers perimetrales, Cortafuegos.",
-        "usr": "Redes domésticas y empresariales para compartir una IP pública."
-      },
-      {
-        "acronym": "ICMP", "english": "Internet Control Message Protocol", "spanish": "Protocolo de Mensajes de Control de Internet", "pin": "🔴", 
-        "img": "Un botiquín de primeros auxilios informando errores como \"Destino Inalcanzable\".",
-        "hw": "Herramientas integradas en Routers y sistemas operativos (Ping, Traceroute).",
-        "usr": "Administradores de red para diagnóstico y pruebas de conectividad."
-      },
-      {
-        "acronym": "BGP", "english": "Border Gateway Protocol", "spanish": "Protocolo de Puerta de Enlace de Frontera", "pin": "🔴", 
-        "img": "Embajadores negociando rutas entre países (Sistemas Autónomos).",
-        "hw": "Routers de núcleo de operadores de telecomunicaciones (ASNs).",
-        "usr": "Operadores de Internet globales para intercambiar rutas a escala mundial."
-      },
-      {
-        "acronym": "OSPF", "english": "Open Shortest Path First", "spanish": "Abrir Primero la Ruta más Corta", "pin": "🔴", 
-        "img": "Un mapa que se actualiza en tiempo real para encontrar el camino más veloz.",
-        "hw": "Routers corporativos de capa 3.",
-        "usr": "Empresas medianas y grandes para enrutamiento interno dinámico."
-      },
-      {
-        "acronym": "RIP", "english": "Routing Information Protocol", "spanish": "Protocolo de Información de Enrutamiento", "pin": "🔴", 
-        "img": "Un protocolo antiguo contando cuántos \"saltos\" faltan para llegar.",
-        "hw": "Routers tradicionales en redes pequeñas.",
-        "usr": "Administradores de redes pequeñas para enrutamiento interior básico."
-      },
-      {
-        "acronym": "CIDR", "english": "Classless Interdomain Routing", "spanish": "Enrutamiento Interdominio sin Clases", "pin": "🔴", 
-        "img": "Una regla que corta bloques de IPs exactos para no desperdiciar nada.",
-        "hw": "Tablas de enrutamiento en Routers modernos.",
-        "usr": "Ingenieros de redes y proveedores para optimizar el espacio de direcciones IP."
-      },
-      {
-        "acronym": "MPLS", "english": "MultiProtocol Label Switching", "spanish": "Conmutación de Etiquetas Multiprotocolo", "pin": "🔴 / 🟠", 
-        "img": "Paquete con una etiqueta neón para pasar por la \"vía rápida\" sin inspección completa.",
-        "hw": "Routers de proveedor de servicios (LER y LSR).",
-        "usr": "Operadores de telecomunicaciones para ofrecer VPNs empresariales de alto rendimiento."
-      },
-      {
-        "acronym": "DHCP", "english": "Dynamic Host Configuration Protocol", "spanish": "Protocolo de Configuración Dinámica de Host", "pin": "🔴", 
-        "img": "Máquina expendedora entregando direcciones IP temporales a dispositivos nuevos.",
-        "hw": "Servidores Windows/Linux, Routers Wi-Fi domésticos.",
-        "usr": "Administradores de red. Dispositivos móviles que solicitan conexión automática."
-      },
-      {
-        "acronym": "TTL", "english": "Time-To-Live", "spanish": "Tiempo de Vida", "pin": "🔴", 
-        "img": "Una bomba de tiempo en el paquete que explota (se borra) tras demasiados saltos.",
-        "hw": "Implementado en la cabecera IP de los datagramas procesados por routers.",
-        "usr": "Sistemas de red para evitar bucles infinitos de enrutamiento."
-      },
-      {
-        "acronym": "IPsec", "english": "IP Security", "spanish": "Seguridad IP", "pin": "🔴", 
-        "img": "Un escudo de energía transparente envolviendo cada datagrama de red.",
-        "hw": "Firewalls avanzados, Routers VPN con aceleración criptográfica.",
-        "usr": "Empresas y administradores para asegurar comunicaciones de capa de red (VPNs site-to-site)."
-      },
-      {
-        "acronym": "IGP", "english": "Interior Gateway Protocol", "spanish": "Protocolo de Pasarela Interior", "pin": "🔴", 
-        "img": "Un guardia dirigiendo el tráfico solo dentro de las murallas de su propio castillo.",
-        "hw": "Routers dentro de un Sistema Autónomo (ej. OSPF, EIGRP).",
-        "usr": "Administradores de red para enrutamiento interno."
-      },
-      {
-        "acronym": "IGMP", "english": "Internet Group Management Protocol", "spanish": "Protocolo de Administración de Grupos de Internet", "pin": "🔴", 
-        "img": "Un monitor de club anotando quiénes quieren recibir la misma señal de video.",
-        "hw": "Routers y Switches con capacidad de multidifusión (multicast).",
-        "usr": "Hosts y routers para gestionar la pertenencia a grupos de multicast."
-      },
-      {
-        "acronym": "MTU", "english": "Maximum Transmission Unit", "spanish": "Unidad Máxima de Transmisión", "pin": "🔴 / 🟠", 
-        "img": "La altura de un túnel que limita qué tan grande puede ser el camión (paquete).",
-        "hw": "Interfaces de red de routers, switches y tarjetas NIC.",
-        "usr": "Equipos de red para fragmentar o evitar fragmentación de paquetes."
-      },
-      {
-        "acronym": "SLA", "english": "Service Level Agreement", "spanish": "Acuerdo de Nivel de Servicio", "pin": "🔴", 
-        "img": "Un contrato de oro que garantiza velocidad y calidad al cliente.",
-        "hw": "Sistemas de monitoreo y gestión de calidad de red.",
-        "usr": "Proveedores de servicios y clientes corporativos para formalizar garantías de red."
-      },
-      {
-        "acronym": "QoS", "english": "Quality of Service", "spanish": "Calidad de Servicio", "pin": "🔴", 
-        "img": "Un policía de tránsito dando prioridad a la ambulancia (Voz/Video) sobre autos comunes.",
-        "hw": "Routers y switches administrables con colas de prioridad.",
-        "usr": "Administradores de red para garantizar buen rendimiento en tráfico crítico (VoIP, video)."
-      },
-      {
-        "acronym": "SDN", "english": "Software-Defined Networking", "spanish": "Redes Definidas por Software", "pin": "🔴", 
-        "img": "Un cerebro central programable controlando miles de switches a distancia.",
-        "hw": "Controladores SDN (como OpenDaylight), Switches compatibles con OpenFlow.",
-        "usr": "Arquitectos de centros de datos y grandes operadores de red."
-      },
-      {
-        "acronym": "IKE", "english": "Internet Key Exchange", "spanish": "Intercambio de Claves de Internet", "pin": "🔴", 
-        "img": "Dos computadoras intercambiando llaves secretas para iniciar una conexión IPsec.",
-        "hw": "Gateways VPN, Routers y cortafuegos con seguridad IPsec.",
-        "usr": "Administradores de seguridad para establecer asociaciones de seguridad cifradas."
-      },
-      {
-        "acronym": "TCP", "english": "Transmission Control Protocol", "spanish": "Protocolo de Control de Transmisión", "pin": "🟢", 
-        "img": "Un mensajero pidiendo firma de recibido por cada caja y entregando en orden.",
-        "hw": "Implementado en el software del Sistema Operativo de Servidores y PCs.",
-        "usr": "Navegadores web, aplicaciones de descarga de archivos, correos electrónicos."
-      },
-      {
-        "acronym": "UDP", "english": "User Datagram Protocol", "spanish": "Protocolo de Datagramas de Usuario", "pin": "🟢", 
-        "img": "Un cañón disparando pelotas de datos sin ver si alguien las atrapa.",
-        "hw": "Software de transmisión y Servidores multimedia.",
-        "usr": "Gamers (juegos online), servicios de streaming, llamadas de VoIP y DNS."
-      },
-      {
-        "acronym": "RTO", "english": "Retransmission TimeOut", "spanish": "Tiempo de Espera para Retransmisión", "pin": "🟢", 
-        "img": "Un reloj de arena que al vaciarse obliga a mandar el paquete de nuevo.",
-        "hw": "Pilas de protocolo de transporte (TCP) en sistemas operativos.",
-        "usr": "Algoritmos de transporte para gestionar la pérdida de paquetes."
-      },
-      {
-        "acronym": "RTT", "english": "Round-Trip Time", "spanish": "Tiempo de Ida y Vuelta", "pin": "🟢", 
-        "img": "Un bumerán con un cronómetro midiendo cuánto tarda en volver del servidor.",
-        "hw": "Medido por herramientas de software en la capa de transporte y red.",
-        "usr": "Administradores de red y jugadores para medir latencia."
-      },
-      {
-        "acronym": "MSS", "english": "Maximum Segment Size", "spanish": "Tamaño Máximo de Segmento", "pin": "🟢", 
-        "img": "El tamaño de la caja de cartón donde metemos los datos de la aplicación.",
-        "hw": "Configurado en las pilas TCP de los sistemas operativos host.",
-        "usr": "Protocolos de transporte para optimizar el tamaño de los segmentos."
-      },
-      {
-        "acronym": "QUIC", "english": "Quick UDP Internet Connection", "spanish": "Conexión UDP Rápida de Internet", "pin": "🟢", 
-        "img": "Un rayo de luz que une la velocidad de UDP con la seguridad de TCP.",
-        "hw": "Servidores web modernos (como Google y Cloudflare), navegadores actuales.",
-        "usr": "Usuarios de internet modernos para conexiones web ultrarrápidas y seguras."
-      },
-      {
-        "acronym": "SCTP", "english": "Stream Control Transmission Protocol", "spanish": "Protocolo de Control de Transmisión de Flujo", "pin": "🟢", 
-        "img": "Un camión con múltiples motores para misiones que no pueden fallar.",
-        "hw": "Servidores de telefonía IP y redes de telecomunicaciones móviles (Core 4G/5G).",
-        "usr": "Operadores de telecomunicaciones y sistemas de alta disponibilidad."
-      },
-      {
-        "acronym": "WWW", "english": "World Wide Web", "spanish": "Red Informática Mundial", "pin": "🔵", 
-        "img": "Un inmenso tejido de araña uniendo millones de bibliotecas digitales.",
-        "hw": "Servidores Web, Granjas de servidores, Navegadores.",
-        "usr": "Miles de millones de usuarios consultando páginas e hipertextos en internet."
-      },
-      {
-        "acronym": "HTTP", "english": "HyperText Transfer Protocol", "spanish": "Protocolo de Transferencia de Hipertexto", "pin": "🔵", 
-        "img": "Una mano pidiendo una hoja de papel (página web) a un estante gigante.",
-        "hw": "Servidores Web (Apache, Nginx, IIS), Navegadores (Chrome, Safari).",
-        "usr": "Miles de millones de usuarios que navegan por páginas web todos los días."
-      },
-      {
-        "acronym": "HTTPS", "english": "Secure HyperText Transfer Protocol", "spanish": "Protocolo de Transferencia de Hipertexto Seguro", "pin": "🔵", 
-        "img": "La misma mano pero usando guantes blindados y guardando el papel en una caja fuerte.",
-        "hw": "Servidores web con certificados digitales instalados, Navegadores.",
-        "usr": "Usuarios de internet que exigen privacidad y seguridad en transacciones web."
-      },
-      {
-        "acronym": "DNS", "english": "Domain Name System", "spanish": "Sistema de Nombres de Dominio", "pin": "🔵", 
-        "img": "Una guía telefónica que traduce nombres (google.com) a números (IP).",
-        "hw": "Servidores BIND de alta capacidad distribuidos globalmente.",
-        "usr": "Cualquier persona que escriba el nombre de una página web en su navegador."
-      },
-      {
-        "acronym": "FTP", "english": "File Transfer Protocol", "spanish": "Protocolo de Transferencia de Archivos", "pin": "🔵", 
-        "img": "Una grúa moviendo contenedores de archivos pesados entre computadoras.",
-        "hw": "Servidores dedicados de archivos.",
-        "usr": "Administradores de sistemas para subir o descargar archivos pesados de servidores web."
-      },
-      {
-        "acronym": "SMTP", "english": "Simple Mail Transfer Protocol", "spanish": "Protocolo Simple de Transferencia de Correo", "pin": "🔵", 
-        "img": "Un buzón azul con una flecha hacia afuera (para enviar cartas).",
-        "hw": "Servidores de correo saliente (Mail Transfer Agents).",
-        "usr": "Sistemas de correo electrónico para enviar mensajes entre servidores."
-      },
-      {
-        "acronym": "IMAP", "english": "Internet Mail Access Protocol", "spanish": "Protocolo de Acceso a Mensajes de Internet", "pin": "🔵", 
-        "img": "Un usuario leyendo sus cartas a través de un cristal sin sacarlas de la oficina postal.",
-        "hw": "Servidores de correo electrónico.",
-        "usr": "Usuarios de correo que leen sus mensajes sincronizados desde múltiples dispositivos."
-      },
-      {
-        "acronym": "POP3", "english": "Post Office Protocol v3", "spanish": "Protocolo de Oficina de Correos versión 3", "pin": "🔵", 
-        "img": "Un usuario sacando todas sus cartas del buzón para llevárselas a casa.",
-        "hw": "Servidores de correo electrónico.",
-        "usr": "Usuarios que descargan sus correos a un solo dispositivo localmente."
-      },
-      {
-        "acronym": "SIP", "english": "Session Initiation Protocol", "spanish": "Protocolo de Iniciación de Sesión", "pin": "🔵", 
-        "img": "Un telefonista digital estableciendo la conexión antes de que empiece la voz.",
-        "hw": "Conmutadores IP (PBX), Teléfonos IP, Servidores Proxy SIP.",
-        "usr": "Empresas con telefonía IP y servicios de llamadas por internet."
-      },
-      {
-        "acronym": "RTP", "english": "Real-Time Transport Protocol", "spanish": "Protocolo de Transporte en Tiempo Real", "pin": "🔵 / 🟢", 
-        "img": "Un metrónomo musical poniendo marcas de tiempo a los paquetes de audio.",
-        "hw": "Servidores de streaming, terminales de videoconferencia, teléfonos IP.",
-        "usr": "Aplicaciones de voz y video en streaming en vivo."
-      },
-      {
-        "acronym": "SSL", "english": "Secure Sockets Layer", "spanish": "Capa de Sockets Seguros", "pin": "🔵 / 🟢", 
-        "img": "Un candado de cristal protegiendo el socket de la aplicación.",
-        "hw": "Servidores web antiguos (tecnología obsoleta reemplazada por TLS).",
-        "usr": "Sistemas heredados que requerían cifrado web básico."
-      },
-      {
-        "acronym": "TLS", "english": "Transport Layer Security", "spanish": "Seguridad de la Capa de Transporte", "pin": "🔵 / 🟢", 
-        "img": "Un escudo de energía moderno que reemplazó a SSL para el comercio seguro.",
-        "hw": "Aceleradores SSL/TLS de hardware, Servidores web modernos.",
-        "usr": "Cualquier sitio web seguro actual (HTTPS), aplicaciones bancarias y de mensajería."
-      }
-      {
-        "acronym": "F/UTP", "english": "Foiled Unshielded Twisted Pair", "spanish": "Par trenzado no apantallado con blindaje global de lámina", "pin": "🟡", 
-        "img": "Un cable de red cuya funda exterior es de papel de aluminio brillante, protegiendo los hilos interiores.",
-        "hw": "Cables de red con blindaje global de aluminio y conectores RJ-45.",
-        "usr": "Instalaciones de red para reducir la interferencia electromagnética externa."
-      },
-      {
-        "acronym": "S/FTP", "english": "Screened Foiled Twisted Pair", "spanish": "Par trenzado con blindaje de lámina por par y malla global", "pin": "🟡", 
-        "img": "Un cable blindado con \"armadura\" de malla metálica y cada par envuelto individualmente en papel plata.",
-        "hw": "Cables de red de ultra alta categoría para centros de datos.",
-        "usr": "Infraestructuras de red críticas con máxima exigencia de aislamiento de ruido."
-      },
-      {
-        "acronym": "VDSL/VDSL2", "english": "Very high speed Digital Subscriber Line", "spanish": "Línea de suscriptor digital de muy alta velocidad", "pin": "🟡", 
-        "img": "Un cable de cobre emitiendo ráfagas de energía blanca ultra rápidas, superando al ADSL tradicional.",
-        "hw": "Modems VDSL, DSLAMs avanzados en centrales telefónicas.",
-        "usr": "Usuarios residenciales con acceso a internet de banda ancha de alta velocidad sobre cobre."
-      },
-      {
-        "acronym": "AON", "english": "Active Optical Network", "spanish": "Red óptica activa", "pin": "🟠", 
-        "img": "Un switch eléctrico en medio de una red de fibra que requiere energía para dirigir la luz.",
-        "hw": "Conmutadores y enrutadores ópticos activos con alimentación eléctrica.",
-        "usr": "Operadores de telecomunicaciones para redes de fibra con gestión activa de tráfico."
-      },
-      {
-        "acronym": "ONT", "english": "Optical Network Terminator", "spanish": "Terminación de red óptica", "pin": "🟡", 
-        "img": "Una pequeña caja de cristal en la pared de una casa que convierte la luz de la fibra en electricidad para el router.",
-        "hw": "Dispositivos ONT, Conversores de medios ópticos a Ethernet.",
-        "usr": "Hogares y oficinas con conexiones FTTH."
-      },
-      {
-        "acronym": "OLT", "english": "Optical Line Terminator", "spanish": "Terminación de línea óptica", "pin": "🟠", 
-        "img": "Un estante masivo en la central telefónica que gestiona miles de conexiones de fibra hacia los hogares.",
-        "hw": "Chasis OLT de alta densidad en centros de datos de operadores.",
-        "usr": "Proveedores de internet de fibra óptica para gestionar múltiples usuarios."
-      },
-      {
-        "acronym": "WDM", "english": "Wavelength Division Multiplexing", "spanish": "Multiplexión por división de longitud de onda", "pin": "🟡", 
-        "img": "Un prisma que une láseres de colores (rojo, verde, azul) en un solo hilo de vidrio.",
-        "hw": "Multiplexores ópticos y módulos láser de múltiples longitudes de onda.",
-        "usr": "Operadores de redes de fibra óptica para aumentar la capacidad de transmisión."
-      },
-      {
-        "acronym": "DWDM", "english": "Dense Wavelength Division Multiplexing", "spanish": "Multiplexión por división de longitud de onda densa", "pin": "🟡", 
-        "img": "Un arcoíris masivo con cientos de colores apretados viajando por una sola fibra óptica.",
-        "hw": "Transmisores láser de alta precisión y multiplexores densos.",
-        "usr": "Redes troncales de telecomunicaciones de larga distancia y alta capacidad."
-      },
-      {
-        "acronym": "ISM", "english": "Industrial, Scientific, and Medical", "spanish": "Banda industrial, científica y médica", "pin": "🟡", 
-        "img": "Un microondas, un teléfono inalámbrico y una laptop compartiendo una misma \"nube\" de frecuencia de 2.4 GHz.",
-        "hw": "Routers Wi-Fi, dispositivos Bluetooth, hornos microondas.",
-        "usr": "Público general utilizando dispositivos inalámbricos de uso libre."
-      },
-      {
-        "acronym": "GEO", "english": "Geostationary Earth Orbit", "spanish": "Órbitas terrestres geoestacionarias", "pin": "🟡", 
-        "img": "Un satélite que parece \"congelado\" en el cielo a 35,800 km de altura sobre el ecuador.",
-        "hw": "Satélites geoestacionarios de gran tamaño, antenas parabólicas fijas.",
-        "usr": "Servicios de televisión satelital y telecomunicaciones de cobertura fija."
-      },
-      {
-        "acronym": "MEO", "english": "Medium Earth Orbit", "spanish": "Órbita terrestre media", "pin": "🟡", 
-        "img": "Un satélite GPS orbitando a media altura entre la Tierra y los satélites geoestacionarios.",
-        "hw": "Constelaciones de satélites de navegación y comunicación.",
-        "usr": "Sistemas de posicionamiento global (GPS) y navegación."
-      },
-      {
-        "acronym": "LEO", "english": "Low Earth Orbit", "spanish": "Órbita terrestre baja", "pin": "🟡", 
-        "img": "Un satélite pequeño girando a gran velocidad muy cerca de la superficie terrestre (como los de Iridium).",
-        "hw": "Constelaciones de satélites de baja latencia, terminales de usuario motorizadas.",
-        "usr": "Usuarios de internet satelital de alta velocidad y baja latencia."
-      },
-      {
-        "acronym": "VSAT", "english": "Very Small Aperture Terminal", "spanish": "Terminal de apertura muy pequeña", "pin": "🟡", 
-        "img": "Una antena parabólica doméstica de menos de 1 metro apuntando directamente a un satélite.",
-        "hw": "Antenas parabólicas pequeñas, modems satelitales.",
-        "usr": "Zonas remotas y empresas que requieren conectividad satelital directa."
-      },
-      {
-        "acronym": "MIMO", "english": "Multiple Input Multiple Output", "spanish": "Múltiples entradas, múltiples salidas", "pin": "🟡", 
-        "img": "Un router con 4 antenas enviando 4 chorros de datos simultáneos hacia una laptop.",
-        "hw": "Routers y dispositivos inalámbricos con múltiples antenas y chips avanzados.",
-        "usr": "Dispositivos Wi-Fi y redes móviles modernas para mejorar la tasa de transferencia."
-      },
-      {
-        "acronym": "MU-MIMO", "english": "Multi-User MIMO", "spanish": "MIMO multiusuario", "pin": "🟠", 
-        "img": "Un punto de acceso inteligente enviando rayos de datos a tres teléfonos diferentes al mismo tiempo.",
-        "hw": "Puntos de acceso Wi-Fi 5 y Wi-Fi 6 avanzados.",
-        "usr": "Entornos con múltiples usuarios conectados simultáneamente."
-      },
-      {
-        "acronym": "WCDMA", "english": "Wideband Code Division Multiple Access", "spanish": "Acceso múltiple por división de código de banda ancha", "pin": "🟠", 
-        "img": "Una antena celular 3G que permite a muchos usuarios hablar usando códigos en lugar de frecuencias.",
-        "hw": "Estaciones base 3G y terminales móviles compatibles.",
-        "usr": "Operadores de telefonía móvil y usuarios de redes 3G."
-      },
-      {
-        "acronym": "UMTS", "english": "Universal Mobile Telecommunications System", "spanish": "Sistema universal de telecomunicaciones móviles", "pin": "🔴", 
-        "img": "El logo global de la red 3G que une voz y datos en smartphones.",
-        "hw": "Núcleo de red y torres de telefonía móvil 3G.",
-        "usr": "Usuarios de servicios móviles de tercera generación."
-      },
-      {
-        "acronym": "HSPA", "english": "High Speed Packet Access", "spanish": "Acceso de paquetes de alta velocidad", "pin": "🟠", 
-        "img": "Un cohete naranja acelerando una conexión 3G hacia velocidades de banda ancha.",
-        "hw": "Actualizaciones de hardware en estaciones base y modems celulares.",
-        "usr": "Usuarios móviles con acceso a internet móvil 3G mejorado (HSDPA/HSUPA)."
-      },
-      {
-        "acronym": "GPRS", "english": "General Packet Radio Service", "spanish": "Servicio general de paquetes vía radio", "pin": "🟠", 
-        "img": "Un puente que permite que las redes de voz antiguas manden los primeros paquetes de datos (Internet 2.5G).",
-        "hw": "Equipos de conmutación de paquetes integrados en redes GSM.",
-        "usr": "Usuarios de telefonía móvil inicial para transmisión de datos móviles básicos."
-      },
-      {
-        "acronym": "SGSN", "english": "Serving GPRS Support Node", "spanish": "Nodo de soporte GPRS servidor", "pin": "🔴", 
-        "img": "Un router celular que sabe exactamente en qué celda estás y te entrega tus mensajes.",
-        "hw": "Servidores y routers de control en el núcleo de red móvil 2.5G/3G.",
-        "usr": "Operadores móviles para gestionar la movilidad y entrega de paquetes a los usuarios."
-      },
-      {
-        "acronym": "GGSN", "english": "Gateway GPRS Support Node", "spanish": "Nodo de soporte GPRS pasarela", "pin": "🔴", 
-        "img": "La gran puerta fronteriza que conecta a todos los móviles con la Internet pública.",
-        "hw": "Routers de pasarela en la red central de telecomunicaciones móviles.",
-        "usr": "Operadores móviles para interconectar la red celular con internet."
-      },
-      {
-        "acronym": "UE", "english": "User Equipment", "spanish": "Equipo de usuario", "pin": "🔵 / 🟡", 
-        "img": "Un smartphone o tablet siendo procesado como un objeto final de la red LTE.",
-        "hw": "Smartphones, tablets, módems USB celulares.",
-        "usr": "Usuarios finales de redes de telefonía móvil."
-      },
-      {
-        "acronym": "eNodeB", "english": "Evolved Node B", "spanish": "Nodo B evolucionado", "pin": "🟡 / 🟠", 
-        "img": "La torre de telefonía inteligente de 4G que toma decisiones de red sin ayuda externa.",
-        "hw": "Estaciones base de celdas móviles 4G LTE.",
-        "usr": "Operadores de telecomunicaciones para proveer cobertura y acceso radioeléctrico 4G."
-      },
-      {
-        "acronym": "MME", "english": "Mobility Management Entity", "spanish": "Entidad de gestión de la movilidad", "pin": "🔴", 
-        "img": "Un oficial de tránsito digital que gestiona tu permiso para entrar a la red LTE.",
-        "hw": "Servidores de control en el núcleo de la red EPC (4G).",
-        "usr": "Operadores de red para autenticación, seguimiento y gestión de handovers."
-      },
-      {
-        "acronym": "P-GW", "english": "Packet Data Network Gateway", "spanish": "Pasarela de la red de datos empaquetados", "pin": "🔴", 
-        "img": "Un router LTE que te asigna tu dirección IP y te da salida a Google.",
-        "hw": "Routers de borde del núcleo de red móvil evolucionado.",
-        "usr": "Dispositivos móviles para conectarse a redes externas e internet."
-      },
-      {
-        "acronym": "S-GW", "english": "Service Gateway", "spanish": "Pasarela de servicio", "pin": "🔴", 
-        "img": "Un punto de anclaje donde tus datos se mantienen fluyendo mientras viajas de una torre a otra.",
-        "hw": "Routers de conmutación en el núcleo de red móvil.",
-        "usr": "Red móvil para enrutar paquetes de datos de los usuarios entre estaciones base."
-      },
-      {
-        "acronym": "HSS", "english": "Home Subscriber Server", "spanish": "Servidor de abonado doméstico", "pin": "🔵", 
-        "img": "Una base de datos de oro que guarda tu perfil, plan de datos y contraseña secreta.",
-        "hw": "Servidores de bases de datos centrales de alta disponibilidad.",
-        "usr": "Operadores móviles para la gestión de perfiles de usuario y autenticación."
-      },
-      {
-        "acronym": "EPC", "english": "Evolved Packet Core", "spanish": "Núcleo de paquetes mejorado", "pin": "🔴", 
-        "img": "El corazón de la red 4G, un sistema completamente basado en IP.",
-        "hw": "Conjunto de servidores, pasarelas y routers de la red central LTE.",
-        "usr": "Operadores móviles para la gestión integral de datos y control 4G."
-      },
-      {
-        "acronym": "BER", "english": "Bit Error Rate", "spanish": "Tasa de errores de bit", "pin": "🟡", 
-        "img": "Una cadena de bits donde algunos ceros se han vuelto unos por culpa del ruido.",
-        "hw": "Analizadores de protocolos y medidores de calidad de canal físico.",
-        "usr": "Ingenieros de telecomunicaciones para medir la confiabilidad de un enlace."
-      },
-      {
-        "acronym": "ASK", "english": "Amplitude Shift Keying", "spanish": "Modulación por desplazamiento de amplitud", "pin": "🟡", 
-        "img": "Una onda de radio que sube y baja su altura para representar 1s y 0s.",
-        "hw": "Moduladores y demoduladores digitales en circuitos de radiofrecuencia básica.",
-        "usr": "Sistemas de transmisión de datos digitales simples y controles remotos."
-      },
-      {
-        "acronym": "FSK", "english": "Frequency Shift Keying", "spanish": "Modulación por desplazamiento de frecuencia", "pin": "🟡", 
-        "img": "Una onda que se aprieta (rápida) o se estira (lenta) para enviar datos.",
-        "hw": "Modems y circuitos de transmisión por radiofrecuencia.",
-        "usr": "Sistemas de telemetría, identificadores de llamadas y modems antiguos."
-      },
-      {
-        "acronym": "PSK", "english": "Phase Shift Keying", "spanish": "Modulación por desplazamiento de fase", "pin": "🟡", 
-        "img": "Una onda que salta bruscamente de dirección para indicar un cambio de bit.",
-        "hw": "Transmisores y receptores digitales de alta eficiencia espectral.",
-        "usr": "Comunicaciones satelitales, redes Wi-Fi y sistemas de transmisión digital."
-      },
-      {
-        "acronym": "QAM", "english": "Quadrature Amplitude Modulation", "spanish": "Modulación de amplitud en cuadratura", "pin": "🟡", 
-        "img": "Un tablero de puntos (constelación) donde cada punto representa múltiples bits combinando fase y altura.",
-        "hw": "Modems de cable, equipos de microondas digitales y routers avanzados.",
-        "usr": "Sistemas de televisión por cable, Wi-Fi de alta velocidad y redes 4G/5G."
-      }
+      { "acronym": "PAN", "english": "Personal Area Network", "spanish": "Red de Área Personal", "pin": "🟡 / 🟠", "img": "Un aura azul uniendo un reloj inteligente, un teléfono y audífonos.", "hw": "Módulos Bluetooth, Infrarrojos, Smartwatches, Auriculares inalámbricos.", "usr": "Cualquier individuo en su espacio personal de hasta 10 metros." },
+      { "acronym": "LAN", "english": "Local Area Network", "spanish": "Red de Área Local", "pin": "🟠", "img": "Un edificio con cables de luz uniendo computadoras en un solo nudo central.", "hw": "Switches Ethernet, Cables UTP, Puntos de Acceso (AP), Tarjetas de Red (NIC).", "usr": "Empleados de oficina, familias en el hogar, estudiantes en un laboratorio." },
+      { "acronym": "MAN", "english": "Metropolitan Area Network", "spanish": "Red de Área Metropolitana", "pin": "🔴", "img": "Mapa de una ciudad con líneas de fibra óptica uniendo edificios distantes.", "hw": "Routers de núcleo, Switches de alta velocidad, Enlaces de fibra óptica metropolitana.", "usr": "Instituciones gubernamentales, universidades con múltiples campus urbanos." },
+      { "acronym": "WAN", "english": "Wide Area Network", "spanish": "Red de Área Amplia", "pin": "🔴", "img": "Un satélite enviando luz a través de un océano entre dos continentes.", "hw": "Routers de borde, Cables submarinos, Enlaces satelitales, Conexiones MPLS.", "usr": "Empresas multinacionales, operadoras de telecomunicaciones, gobiernos." },
+      { "acronym": "VLAN", "english": "Virtual Local Area Network", "spanish": "Red de Área Local Virtual", "pin": "🟠", "img": "Un switch de cristal dividido por láminas de colores que separan el tráfico.", "hw": "Switches administrables compatibles con IEEE 802.1Q.", "usr": "Administradores de red para segmentar tráfico corporativo por seguridad o rendimiento." },
+      { "acronym": "VPN", "english": "Virtual Private Network", "spanish": "Red Privada Virtual", "pin": "🔴", "img": "Un túnel blindado que cruza una carretera pública de forma invisible.", "hw": "Firewalls con soporte IPsec, Routers empresariales, Software VPN (OpenVPN).", "usr": "Trabajadores remotos, corporativos que conectan sucursales, usuarios que evaden censura." },
+      { "acronym": "ISP", "english": "Internet Service Provider", "spanish": "Proveedor de Servicios de Internet", "pin": "🔴", "img": "Una torre de control gigante distribuyendo \"llaves\" de acceso a miles de hogares.", "hw": "CMTS, OLTs de fibra óptica, Routers de Borde de Gran Escala, Servidores RADIUS.", "usr": "Hogares, empresas y cualquier usuario final que contrate acceso a Internet." },
+      { "acronym": "AS", "english": "Autonomous System", "spanish": "Sistema Autónomo", "pin": "🔴", "img": "Un castillo amurallado con su propio ejército de mensajeros internos.", "hw": "Routers de alta capacidad ejecutando BGP en el núcleo de Internet.", "usr": "Grandes ISPs, universidades y corporaciones globales con numeración propia." },
+      { "acronym": "IXP", "english": "Internet Exchange Point", "spanish": "Punto de Intercambio de Internet", "pin": "🔴 / 🟠", "img": "Una estación de trenes futurista donde redes de distintos ISP intercambian datos.", "hw": "Switches Ethernet de centro de datos de alta densidad (100G/400G).", "usr": "ISPs y proveedores de contenido para interconectar tráfico de forma directa." },
+      { "acronym": "CDN", "english": "Content Delivery Network", "spanish": "Red de Distribución de Contenido", "pin": "🔵", "img": "Almacenes locales (servidores) entregando paquetes de video cerca del usuario.", "hw": "Servidores perimetrales de caché ubicados estratégicamente cerca de los usuarios.", "usr": "Plataformas de streaming, portales de noticias y redes sociales." },
+      { "acronym": "POP", "english": "Point of Presence", "spanish": "Punto de Presencia", "pin": "🔴", "img": "Un buzón de correos brillante en la esquina de una red de ISP.", "hw": "Routers de acceso, Switches de agregación, Bastidores de telecomunicaciones.", "usr": "Proveedores de internet para interconectar clientes locales con la red troncal." },
+      { "acronym": "FTTH", "english": "Fiber To The Home", "spanish": "Fibra hasta el Hogar", "pin": "🟡", "img": "Un hilo de vidrio transparente entrando directo por el muro de una casa.", "hw": "Cable de fibra óptica monomodo, rosetas ópticas, ONTs.", "usr": "Usuarios residenciales que disfrutan de internet de ultra alta velocidad." },
+      { "acronym": "PON", "english": "Passive Optical Network", "spanish": "Red Óptica Pasiva", "pin": "🟡", "img": "Un prisma de cristal que divide un láser en múltiples rayos sin usar electricidad.", "hw": "Splitters ópticos pasivos, OLT, ONUs.", "usr": "Operadores de telecomunicaciones para llevar servicios de fibra eficientes." },
+      { "acronym": "GPON", "english": "Gigabit-capable PON", "spanish": "Red Óptica Pasiva con Capacidad de Gigabit", "pin": "🟡", "img": "El mismo prisma emitiendo ráfagas de luz ultra rápidas con un cronómetro de oro.", "hw": "Equipos OLT y ONT compatibles con estándares Gigabit GPON.", "usr": "Proveedores de internet de fibra óptica de alta capacidad residencial." },
+      { "acronym": "HFC", "english": "Hybrid Fiber Coax", "spanish": "Híbrido de Fibra y Coaxial", "pin": "🟡", "img": "Un cable de cobre grueso conectado a un nodo de luz brillante (fibra) en una esquina.", "hw": "Nodos ópticos, Cable coaxial de alta calidad, Cablemódems.", "usr": "Proveedores de televisión por cable e internet de banda ancha tradicional." },
+      { "acronym": "SONET", "english": "Synchronous Optical Network", "spanish": "Red Óptica Síncrona", "pin": "🟡", "img": "Un anillo de fibra óptica con contenedores de datos sincronizados por un reloj atómico.", "hw": "Multiplexores ópticos add-drop (ADM), Relojes atómicos de red.", "usr": "Grandes operadores de telecomunicaciones para redes troncales." },
+      { "acronym": "SDH", "english": "Synchronous Digital Hierarchy", "spanish": "Jerarquía Digital Síncrona", "pin": "🟡", "img": "Estructura de SONET pero con el logo de estándares internacionales (ITU).", "hw": "Multiplexores SDH de alta velocidad para transporte digital.", "usr": "Operadores de telecomunicaciones globales bajo estándares europeos e internacionales." },
+      { "acronym": "ADSL", "english": "Asymmetric Digital Subscriber Line", "spanish": "Línea de Suscriptor Digital Asimétrica", "pin": "🟡", "img": "Un cable de teléfono antiguo con un tobogán de bajada enorme y uno de subida pequeño.", "hw": "Modems DSL, Splitters telefónicos, DSLAMs en la central.", "usr": "Hogares en zonas rurales o con infraestructura telefónica clásica." },
+      { "acronym": "DSL", "english": "Digital Subscriber Line", "spanish": "Línea de Suscriptor Digital", "pin": "🟡", "img": "El mismo cable de cobre transportando bits digitales a alta velocidad.", "hw": "Modems DSL, Transceptores en pares de cobre tradicionales.", "usr": "Usuarios residenciales y de oficinas que utilizan la red telefónica para datos." },
+      { "acronym": "DSLAM", "english": "DSL Access Multiplexer", "spanish": "Multiplexor de Acceso DSL", "pin": "🟡", "img": "Un dispositivo en la central telefónica que une miles de cables de cobre en una fibra.", "hw": "Chasis DSLAM con tarjetas multiplexoras en centrales de telecomunicaciones.", "usr": "Proveedores de servicios de internet telefónico." },
+      { "acronym": "UTP", "english": "Unshielded Twisted Pair", "spanish": "Par Trenzado no Apantallado", "pin": "🟡", "img": "Ocho hilos de cobre trenzados como trenzas de colores dentro de una funda de plástico azul.", "hw": "Cables de red categoría 5e, 6, 6A con conectores RJ-45.", "usr": "Instalaciones de red en oficinas, hogares y centros de datos tradicionales." },
+      { "acronym": "STP", "english": "Shielded Twisted Pair", "spanish": "Par Trenzado Apantallado", "pin": "🟡", "img": "El mismo cable UTP pero envuelto en una armadura metálica brillante contra interferencias.", "hw": "Cables de cobre blindados con malla metálica y conectores blindados.", "usr": "Entornos industriales con alta interferencia electromagnética." },
+      { "acronym": "NIC", "english": "Network Interface Card", "spanish": "Tarjeta de Interfaz de Red", "pin": "🟠 / 🟡", "img": "Tarjeta de circuitos con un puerto Ethernet; el traductor entre PC y cable.", "hw": "Tarjetas PCIe Ethernet, Controladores Wi-Fi integrados en placas base.", "usr": "Cualquier ordenador, servidor o dispositivo que requiera conectarse a una red." },
+      { "acronym": "RFID", "english": "Radio Frequency Identification", "spanish": "Identificación por Radiofrecuencia", "pin": "🟡", "img": "Una antena diminuta en espiral que brilla al ser tocada por ondas invisibles.", "hw": "Lectores RFID, Etiquetas (tags) inteligentes con microchip.", "usr": "Control de inventarios, logística, peajes automáticos y control de acceso." },
+      { "acronym": "USB", "english": "Universal Serial Bus", "spanish": "Bus Serie Universal", "pin": "🟡 / 🟠", "img": "Un conector rectangular que usa \"relleno de bits\" para sincronizar datos.", "hw": "Controladores USB, Puertos y cables de conexión periférica.", "usr": "Cualquier usuario conectando periféricos (mouse, teclados, memorias) a equipos." },
+      { "acronym": "NRZ", "english": "Non-Return-to-Zero", "spanish": "No Retorno a Cero", "pin": "🟡", "img": "Una onda cuadrada simple que se mantiene arriba para el \"1\" y abajo para el \"0\".", "hw": "Circuitos de transmisión de capa física y modulación digital básica.", "usr": "Sistemas de comunicación digital y diseño de hardware de transmisión." },
+      { "acronym": "NRZI", "english": "Non-Return-to-Zero Inverted", "spanish": "No Retorno a Cero Invertido", "pin": "🟡", "img": "La misma onda pero cambiando de dirección solo cuando aparece un \"1\".", "hw": "Codificadores de capa física en interfaces seriales y USB.", "usr": "Sistemas de transmisión digital para sincronización de reloj." },
+      { "acronym": "PCM", "english": "Pulse Code Modulation", "spanish": "Modulación por Codificación de Impulsos", "pin": "🟡", "img": "Una onda de voz humana convertida en una serie de barras binarias verticales.", "hw": "Códecs de audio digital, Conversores Analógico-Digital (ADC).", "usr": "Telefonía digital y sistemas de procesamiento de señales de voz." },
+      { "acronym": "SNR", "english": "Signal-to-Noise Ratio", "spanish": "Relación Señal-Ruido", "pin": "🟡", "img": "Un rayo de luz (señal) tratando de atravesar una nube de estática gris (ruido).", "hw": "Instrumentos de medición de redes, osciloscopios y analizadores de espectro.", "usr": "Ingenieros de telecomunicaciones para evaluar la calidad de un enlace físico." },
+      { "acronym": "TDM", "english": "Time-Division Multiplexing", "spanish": "Multiplexión por División de Tiempo", "pin": "🟡", "img": "Un carrusel donde cada asiento lleva un trozo de datos de un usuario distinto.", "hw": "Multiplexores digitales en redes troncales de telefonía y transmisión.", "usr": "Operadores de redes para compartir un medio físico entre múltiples canales." },
+      { "acronym": "FDM", "english": "Frequency-Division Multiplexing", "spanish": "Multiplexión por División de Frecuencia", "pin": "🟡", "img": "Una carretera de varios carriles donde cada carril es de un color (frecuencia) diferente.", "hw": "Multiplexores analógicos, Transmisores de radio y televisión tradicional.", "usr": "Sistemas de radiodifusión y transmisión de banda ancha analógica." },
+      { "acronym": "WDM", "english": "Wavelength Division Multiplexing", "spanish": "Multiplexión por División de Longitud de Onda", "pin": "🟡", "img": "Un arcoíris de datos viajando a través de un solo hilo de vidrio.", "hw": "Multiplexores ópticos, Módulos láser de múltiples longitudes de onda.", "usr": "Operadores de redes de fibra óptica de alta capacidad." },
+      { "acronym": "OFDM", "english": "Orthogonal Frequency Division Multiplexing", "spanish": "Multiplexión por División de Frecuencia Ortogonal", "pin": "🟡", "img": "Múltiples ondas de radio entrelazadas perfectamente sin chocar entre sí.", "hw": "Chips de procesamiento digital de señales para Wi-Fi y LTE/5G.", "usr": "Dispositivos inalámbricos modernos (Wi-Fi, 4G, 5G, TV digital)." },
+      { "acronym": "CDMA", "english": "Code Division Multiple Access", "spanish": "Acceso Múltiple por División de Código", "pin": "🟡 / 🟠", "img": "Personas en una fiesta hablando distintos idiomas; tú solo entiendes el tuyo (tu código).", "hw": "Estaciones base celulares y terminales móviles compatibles con CDMA.", "usr": "Operadores de telefonía móvil de tercera generación (3G)." },
+      { "acronym": "LEO", "english": "Low Earth Orbit", "spanish": "Órbita Terrestre Baja", "pin": "🟡", "img": "Un satélite girando muy cerca de la Tierra como un corredor de pista.", "hw": "Constelaciones de satélites artificiales de baja altura, Antenas direccionales.", "usr": "Servicios de internet satelital de baja latencia (Starlink)." },
+      { "acronym": "MEO", "english": "Medium Earth Orbit", "spanish": "Órbita Terrestre Media", "pin": "🟡", "img": "Un satélite a altura media, moviéndose más lento que el LEO.", "hw": "Satélites de navegación y comunicación de órbita media.", "usr": "Sistemas de posicionamiento global (GPS) y telecomunicaciones." },
+      { "acronym": "GEO", "english": "Geostationary Earth Orbit", "spanish": "Órbita Terrestre Geoestacionaria", "pin": "🟡", "img": "Un satélite que parece \"flotar\" fijo sobre un solo punto del ecuador.", "hw": "Satélites geoestacionarios de gran tamaño, Antenas parabólicas fijas.", "usr": "Servicios de radiodifusión de televisión y telecomunicaciones satelitales fijas." },
+      { "acronym": "BOC", "english": "Bell Operating Companies", "spanish": "Compañías Operativas de Bell", "pin": "🟡", "img": "El logo clásico de una campana sobre la red telefónica antigua.", "hw": "Infraestructura de conmutación telefónica tradicional heredada.", "usr": "Empresas históricas de telecomunicaciones de Estados Unidos." },
+      { "acronym": "LATA", "english": "Local Access and Transport Areas", "spanish": "Áreas de Acceso Local y de Transporte", "pin": "🟡", "img": "Círculos geográficos que delimitan dónde termina una red telefónica local.", "hw": "Sistemas de enrutamiento y tarificación de operadoras telefónicas.", "usr": "Compañías de telecomunicaciones para gestionar llamadas locales y de larga distancia." },
+      { "acronym": "DMT", "english": "Discrete MultiTone", "spanish": "Multitono Discreto", "pin": "🟡", "img": "La base matemática de ADSL; 256 minicanales de música digital.", "hw": "Modems ADSL con procesadores de modulación por tonos discretos.", "usr": "Sistemas de banda ancha sobre línea telefónica de cobre." },
+      { "acronym": "MAC", "english": "Medium Access Control", "spanish": "Control de Acceso al Medio", "pin": "🟠", "img": "Una placa de metal grabada con 12 dígitos hexadecimales únicos e imborrables.", "hw": "Controladores embebidos en Tarjetas de Interfaz de Red (NICs), Switches de Capa 2.", "usr": "Hardware de red automatizado. Administradores de red para aplicar filtros." },
+      { "acronym": "ARP", "english": "Address Resolution Protocol", "spanish": "Protocolo de Resolución de Direcciones", "pin": "🟠", "img": "Un megáfono preguntando: \"Tengo la IP, ¿quién me da su nombre físico MAC?\".", "hw": "Implementado en la pila de red del sistema operativo de los hosts.", "usr": "Dispositivos en una red local para descubrir direcciones físicas de vecinos." },
+      { "acronym": "LLC", "english": "Logical Link Control", "spanish": "Control de Enlace Lógico", "pin": "🟠", "img": "Una capa de pegamento invisible que une el hardware con el software de red.", "hw": "Implementado por software en controladores de red (Subcapa IEEE 802.2).", "usr": "Sistemas operativos y tarjetas de red para entrelazar protocolos superiores." },
+      { "acronym": "PPP", "english": "Point-to-Point Protocol", "spanish": "Protocolo Punto a Punto", "pin": "🟠", "img": "Dos manos robóticas estrechándose a través de un cable directo y exclusivo.", "hw": "Routers configurados para enlaces seriales o conexiones PPPoE de banda ancha.", "usr": "Proveedores de acceso para autenticar usuarios de internet residencial." },
+      { "acronym": "CRC", "english": "Cyclic Redundancy Check", "spanish": "Comprobación de Redundancia Cíclica", "pin": "🟠", "img": "Un sello de garantía matemático al final de un paquete para detectar cambios.", "hw": "Procesadores de red y circuitos integrados en NICs.", "usr": "Dispositivos receptores para validar la integridad de las tramas de red." },
+      { "acronym": "CSMA/CD", "english": "Carrier Sense Multiple Access with Collision Detection", "spanish": "Acceso Múltiple con Detección de Colisiones", "pin": "🟠", "img": "Dos personas deteniéndose al chocar sus voces en un pasillo estrecho.", "hw": "Interfaces de red Ethernet half-duplex tradicionales.", "usr": "Redes locales antiguas basadas en hubs o cables coaxiales compartidos." },
+      { "acronym": "CSMA/CA", "english": "Carrier Sense Multiple Access with Collision Avoidance", "spanish": "Acceso Múltiple con Evitación de Colisiones", "pin": "🟠", "img": "Un semáforo inalámbrico que pide permiso antes de dejar pasar datos al aire.", "hw": "Routers Wi-Fi y tarjetas de red inalámbricas (802.11).", "usr": "Dispositivos conectados a redes inalámbricas para evitar interferencias por el aire." },
+      { "acronym": "RTS", "english": "Request to Send", "spanish": "Solicitud de Envío", "pin": "🟠", "img": "Un dispositivo levantando la mano para pedir permiso de hablar en WiFi.", "hw": "Adaptadores de red inalábrica y puntos de acceso Wi-Fi.", "usr": "Dispositivos inalámbricos para gestionar el acceso al medio en entornos congestionados." },
+      { "acronym": "CTS", "english": "Clear to Send", "spanish": "Preparado para Enviar", "pin": "🟠", "img": "El Punto de Acceso respondiendo: \"Adelante, el canal es tuyo por 10ms\".", "hw": "Puntos de acceso Wi-Fi y estaciones cliente.", "usr": "Controladores de red inalámbrica para coordinar la transmisión de datos." },
+      { "acronym": "NAV", "english": "Network Allocation Vector", "spanish": "Vector de Asignación de Red", "pin": "🟠", "img": "Un cronómetro interno en cada host que cuenta cuánto tiempo debe guardar silencio.", "hw": "Implementado en el firmware de los adaptadores de red inalámbrica.", "usr": "Tarjetas Wi-Fi para control de portadora virtual." },
+      { "acronym": "SIFS", "english": "Short Inter-frame Spacing", "spanish": "Espaciado Corto entre Tramas", "pin": "🟠", "img": "Un micro-espacio de silencio absoluto tras recibir un paquete ACK.", "hw": "Controladores de hardware de red inalámbrica.", "usr": "Protocolos MAC inalámbricos para priorizar respuestas inmediatas." },
+      { "acronym": "DIFS", "english": "Distributed Inter-frame Space", "spanish": "Espaciado entre Tramas DCF", "pin": "🟠", "img": "Un espacio de silencio más largo necesario antes de intentar enviar datos nuevos.", "hw": "Adaptadores Wi-Fi y puntos de acceso.", "usr": "Hosts competidores en redes inalámbricas antes de iniciar una transmisión." },
+      { "acronym": "SSID", "english": "Service Set Identifier", "spanish": "Identificador de Conjunto de Servicio", "pin": "🟠", "img": "Un cartel de neón con el nombre de la red WiFi (ej: \"Internet_Gratis\").", "hw": "Puntos de acceso Wi-Fi que transmiten la baliza de red.", "usr": "Usuarios móviles al buscar y conectarse a redes inalámbricas disponibles." },
+      { "acronym": "WEP", "english": "Wired Equivalent Privacy", "spanish": "Privacidad Equivalente al Cable", "pin": "🟠", "img": "Una llave de cristal vieja y rota; fácil de abrir para intrusos.", "hw": "Routers y dispositivos Wi-Fi antiguos (tecnología obsoleta).", "usr": "Sistemas heredados con seguridad inalámbrica vulnerable." },
+      { "acronym": "WPA", "english": "WiFi Protected Access", "spanish": "Acceso Protegido WiFi", "pin": "🟠", "img": "Una llave de metal más resistente que reemplazó a WEP.", "hw": "Equipos de red inalámbrica de transición.", "usr": "Usuarios que requerían mayor seguridad que WEP antes de WPA2." },
+      { "acronym": "WPA2", "english": "WiFi Protected Access 2", "spanish": "Acceso Protegido WiFi 2", "pin": "🟠", "img": "Un candado digital moderno y robusto basado en AES.", "hw": "Routers, puntos de acceso y dispositivos inalámbricos modernos.", "usr": "Usuarios y administradores para proteger redes Wi-Fi con cifrado seguro." },
+      { "acronym": "CCMP", "english": "Counter Mode with CBC-MAC Protocol", "spanish": "Protocolo de Modo Contador con CBC-MAC", "pin": "🟠", "img": "El motor interno ultra seguro que hace que WPA2 funcione.", "hw": "Aceleradores criptográficos por hardware en chips Wi-Fi.", "usr": "Protocolo de cifrado subyacente de WPA2 para garantizar confidencialidad e integridad." },
+      { "acronym": "TKIP", "english": "Temporal Key Integrity Protocol", "spanish": "Protocolo de Integridad de Clave Temporal", "pin": "🟠", "img": "Una llave que cambia de forma cada pocos segundos para confundir al espía.", "hw": "Chips de red inalámbrica compatibles con estándares de transición WPA.", "usr": "Sistemas que necesitaban parchar la seguridad de WEP temporalmente." },
+      { "acronym": "ARQ", "english": "Automatic Repeat Request", "spanish": "Solicitud Automática de Repetición", "pin": "🟠", "img": "Un receptor gritando: \"¡No entendí, mándalo otra vez!\".", "hw": "Controladores de enlace de datos en tarjetas de red y módems.", "usr": "Sistemas de comunicación para control de errores mediante retransmisión." },
+      { "acronym": "NCP", "english": "Network Control Protocol", "spanish": "Protocolo de Control de Red", "pin": "🟠", "img": "El diplomático de PPP que negocia qué idioma (IP, IPv6) se hablará.", "hw": "Implementado en software de conexión de acceso remoto (Routers y PCs).", "usr": "Administradores de red y sistemas en conexiones punto a punto." },
+      { "acronym": "IP", "english": "Internet Protocol", "spanish": "Protocolo de Internet", "pin": "🔴", "img": "Un sobre postal universal que puede viajar por cualquier medio.", "hw": "Routers, Servidores, Sistemas Operativos (Pila TCP/IP).", "usr": "Todos los dispositivos conectados a Internet a nivel global." },
+      { "acronym": "IPv4", "english": "IP version 4", "spanish": "Protocolo de Internet versión 4", "pin": "🔴", "img": "Un sistema de 32 bits (4 bloques) que se está agotando.", "hw": "Routers y dispositivos de red globales.", "usr": "La gran mayoría de sistemas heredados e internet tradicional." },
+      { "acronym": "IPv6", "english": "IP version 6", "spanish": "Protocolo de Internet versión 6", "pin": "🔴", "img": "Un sistema masivo de 128 bits con direcciones infinitas para el futuro.", "hw": "Hardware de red moderno con soporte nativo de doble pila.", "usr": "Nuevas infraestructuras de internet, redes móviles modernas e IoT." },
+      { "acronym": "NAT", "english": "Network Address Translation", "spanish": "Traducción de Direcciones de Red", "pin": "🔴", "img": "Un recepcionista de hotel recibiendo paquetes para muchos huéspedes con una sola IP externa.", "hw": "Routers perimetrales, Cortafuegos.", "usr": "Redes domésticas y empresariales para compartir una IP pública." },
+      { "acronym": "ICMP", "english": "Internet Control Message Protocol", "spanish": "Protocolo de Mensajes de Control de Internet", "pin": "🔴", "img": "Un botiquín de primeros auxilios informando errores como \"Destino Inalcanzable\".", "hw": "Herramientas integradas en Routers y sistemas operativos (Ping, Traceroute).", "usr": "Administradores de red para diagnóstico y pruebas de conectividad." },
+      { "acronym": "BGP", "english": "Border Gateway Protocol", "spanish": "Protocolo de Puerta de Enlace de Frontera", "pin": "🔴", "img": "Embajadores negociando rutas entre países (Sistemas Autónomos).", "hw": "Routers de núcleo de operadores de telecomunicaciones (ASNs).", "usr": "Operadores de Internet globales para intercambiar rutas a escala mundial." },
+      { "acronym": "OSPF", "english": "Open Shortest Path First", "spanish": "Abrir Primero la Ruta más Corta", "pin": "🔴", "img": "Un mapa que se actualiza en tiempo real para encontrar el camino más veloz.", "hw": "Routers corporativos de capa 3.", "usr": "Empresas medianas y grandes para enrutamiento interno dinámico." },
+      { "acronym": "RIP", "english": "Routing Information Protocol", "spanish": "Protocolo de Información de Enrutamiento", "pin": "🔴", "img": "Un protocolo antiguo contando cuántos \"saltos\" faltan para llegar.", "hw": "Routers tradicionales en redes pequeñas.", "usr": "Administradores de redes pequeñas para enrutamiento interior básico." },
+      { "acronym": "CIDR", "english": "Classless Interdomain Routing", "spanish": "Enrutamiento Interdominio sin Clases", "pin": "🔴", "img": "Una regla que corta bloques de IPs exactos para no desperdiciar nada.", "hw": "Tablas de enrutamiento en Routers modernos.", "usr": "Ingenieros de redes y proveedores para optimizar el espacio de direcciones IP." },
+      { "acronym": "MPLS", "english": "MultiProtocol Label Switching", "spanish": "Conmutación de Etiquetas Multiprotocolo", "pin": "🔴 / 🟠", "img": "Paquete con una etiqueta neón para pasar por la \"vía rápida\" sin inspección completa.", "hw": "Routers de proveedor de servicios (LER y LSR).", "usr": "Operadores de telecomunicaciones para ofrecer VPNs empresariales de alto rendimiento." },
+      { "acronym": "DHCP", "english": "Dynamic Host Configuration Protocol", "spanish": "Protocolo de Configuración Dinámica de Host", "pin": "🔴", "img": "Máquina expendedora entregando direcciones IP temporales a dispositivos nuevos.", "hw": "Servidores Windows/Linux, Routers Wi-Fi domésticos.", "usr": "Administradores de red. Dispositivos móviles que solicitan conexión automática." },
+      { "acronym": "TTL", "english": "Time-To-Live", "spanish": "Tiempo de Vida", "pin": "🔴", "img": "Una bomba de tiempo en el paquete que explota (se borra) tras demasiados saltos.", "hw": "Implementado en la cabecera IP de los datagramas procesados por routers.", "usr": "Sistemas de red para evitar bucles infinitos de enrutamiento." },
+      { "acronym": "IPsec", "english": "IP Security", "spanish": "Seguridad IP", "pin": "🔴", "img": "Un escudo de energía transparente envolviendo cada datagrama de red.", "hw": "Firewalls avanzados, Routers VPN con aceleración criptográfica.", "usr": "Empresas y administradores para asegurar comunicaciones de capa de red (VPNs site-to-site)." },
+      { "acronym": "IGP", "english": "Interior Gateway Protocol", "spanish": "Protocolo de Pasarela Interior", "pin": "🔴", "img": "Un guardia dirigiendo el tráfico solo dentro de las murallas de su propio castillo.", "hw": "Routers dentro de un Sistema Autónomo (ej. OSPF, EIGRP).", "usr": "Administradores de red para enrutamiento interno." },
+      { "acronym": "IGMP", "english": "Internet Group Management Protocol", "spanish": "Protocolo de Administración de Grupos de Internet", "pin": "🔴", "img": "Un monitor de club anotando quiénes quieren recibir la misma señal de video.", "hw": "Routers y Switches con capacidad de multidifusión (multicast).", "usr": "Hosts y routers para gestionar la pertenencia a grupos de multicast." },
+      { "acronym": "MTU", "english": "Maximum Transmission Unit", "spanish": "Unidad Máxima de Transmisión", "pin": "🔴 / 🟠", "img": "La altura de un túnel que limita qué tan grande puede ser el camión (paquete).", "hw": "Interfaces de red de routers, switches y tarjetas NIC.", "usr": "Equipos de red para fragmentar o evitar fragmentación de paquetes." },
+      { "acronym": "SLA", "english": "Service Level Agreement", "spanish": "Acuerdo de Nivel de Servicio", "pin": "🔴", "img": "Un contrato de oro que garantiza velocidad y calidad al cliente.", "hw": "Sistemas de monitoreo y gestión de calidad de red.", "usr": "Proveedores de servicios y clientes corporativos para formalizar garantías de red." },
+      { "acronym": "QoS", "english": "Quality of Service", "spanish": "Calidad de Servicio", "pin": "🔴", "img": "Un policía de tránsito dando prioridad a la ambulancia (Voz/Video) sobre autos comunes.", "hw": "Routers y switches administrables con colas de prioridad.", "usr": "Administradores de red para garantizar buen rendimiento en tráfico crítico (VoIP, video)." },
+      { "acronym": "SDN", "english": "Software-Defined Networking", "spanish": "Redes Definidas por Software", "pin": "🔴", "img": "Un cerebro central programable controlando miles de switches a distancia.", "hw": "Controladores SDN (como OpenDaylight), Switches compatibles con OpenFlow.", "usr": "Arquitectos de centros de datos y grandes operadores de red." },
+      { "acronym": "IKE", "english": "Internet Key Exchange", "spanish": "Intercambio de Claves de Internet", "pin": "🔴", "img": "Dos computadoras intercambiando llaves secretas para iniciar una conexión IPsec.", "hw": "Gateways VPN, Routers y cortafuegos con seguridad IPsec.", "usr": "Administradores de seguridad para establecer asociaciones de seguridad cifradas." },
+      { "acronym": "TCP", "english": "Transmission Control Protocol", "spanish": "Protocolo de Control de Transmisión", "pin": "🟢", "img": "Un mensajero pidiendo firma de recibido por cada caja y entregando en orden.", "hw": "Implementado en el software del Sistema Operativo de Servidores y PCs.", "usr": "Navegadores web, aplicaciones de descarga de archivos, correos electrónicos." },
+      { "acronym": "UDP", "english": "User Datagram Protocol", "spanish": "Protocolo de Datagramas de Usuario", "pin": "🟢", "img": "Un cañón disparando pelotas de datos sin ver si alguien las atrapa.", "hw": "Software de transmisión y Servidores multimedia.", "usr": "Gamers (juegos online), servicios de streaming, llamadas de VoIP y DNS." },
+      { "acronym": "RTO", "english": "Retransmission TimeOut", "spanish": "Tiempo de Espera para Retransmisión", "pin": "🟢", "img": "Un reloj de arena que al vaciarse obliga a mandar el paquete de nuevo.", "hw": "Pilas de protocolo de transporte (TCP) en sistemas operativos.", "usr": "Algoritmos de transporte para gestionar la pérdida de paquetes." },
+      { "acronym": "RTT", "english": "Round-Trip Time", "spanish": "Tiempo de Ida y Vuelta", "pin": "🟢", "img": "Un bumerán con un cronómetro midiendo cuánto tarda en volver del servidor.", "hw": "Medido por herramientas de software en la capa de transporte y red.", "usr": "Administradores de red y jugadores para medir latencia." },
+      { "acronym": "MSS", "english": "Maximum Segment Size", "spanish": "Tamaño Máximo de Segmento", "pin": "🟢", "img": "El tamaño de la caja de cartón donde metemos los datos de la aplicación.", "hw": "Configurado en las pilas TCP de los sistemas operativos host.", "usr": "Protocolos de transporte para optimizar el tamaño de los segmentos." },
+      { "acronym": "QUIC", "english": "Quick UDP Internet Connection", "spanish": "Conexión UDP Rápida de Internet", "pin": "🟢", "img": "Un rayo de luz que une la velocidad de UDP con la seguridad de TCP.", "hw": "Servidores web modernos (como Google y Cloudflare), navegadores actuales.", "usr": "Usuarios de internet modernos para conexiones web ultrarrápidas y seguras." },
+      { "acronym": "SCTP", "english": "Stream Control Transmission Protocol", "spanish": "Protocolo de Control de Transmisión de Flujo", "pin": "🟢", "img": "Un camión con múltiples motores para misiones que no pueden fallar.", "hw": "Servidores de telefonía IP y redes de telecomunicaciones móviles (Core 4G/5G).", "usr": "Operadores de telecomunicaciones y sistemas de alta disponibilidad." },
+      { "acronym": "WWW", "english": "World Wide Web", "spanish": "Red Informática Mundial", "pin": "🔵", "img": "Un inmenso tejido de araña uniendo millones de bibliotecas digitales.", "hw": "Servidores Web, Granjas de servidores, Navegadores.", "usr": "Miles de millones de usuarios consultando páginas e hipertextos en internet." },
+      { "acronym": "HTTP", "english": "HyperText Transfer Protocol", "spanish": "Protocolo de Transferencia de Hipertexto", "pin": "🔵", "img": "Una mano pidiendo una hoja de papel (página web) a un estante gigante.", "hw": "Servidores Web (Apache, Nginx, IIS), Navegadores (Chrome, Safari).", "usr": "Miles de millones de usuarios que navegan por páginas web todos los días." },
+      { "acronym": "HTTPS", "english": "Secure HyperText Transfer Protocol", "spanish": "Protocolo de Transferencia de Hipertexto Seguro", "pin": "🔵", "img": "La misma mano pero usando guantes blindados y guardando el papel en una caja fuerte.", "hw": "Servidores web con certificados digitales instalados, Navegadores.", "usr": "Usuarios de internet que exigen privacidad y seguridad en transacciones web." },
+      { "acronym": "DNS", "english": "Domain Name System", "spanish": "Sistema de Nombres de Dominio", "pin": "🔵", "img": "Una guía telefónica que traduce nombres (google.com) a números (IP).", "hw": "Servidores BIND de alta capacidad distribuidos globalmente.", "usr": "Cualquier persona que escriba el nombre de una página web en su navegador." },
+      { "acronym": "FTP", "english": "File Transfer Protocol", "spanish": "Protocolo de Transferencia de Archivos", "pin": "🔵", "img": "Una grúa moviendo contenedores de archivos pesados entre computadoras.", "hw": "Servidores dedicados de archivos.", "usr": "Administradores de sistemas para subir o descargar archivos pesados de servidores web." },
+      { "acronym": "SMTP", "english": "Simple Mail Transfer Protocol", "spanish": "Protocolo Simple de Transferencia de Correo", "pin": "🔵", "img": "Un buzón azul con una flecha hacia afuera (para enviar cartas).", "hw": "Servidores de correo saliente (Mail Transfer Agents).", "usr": "Sistemas de correo electrónico para enviar mensajes entre servidores." },
+      { "acronym": "IMAP", "english": "Internet Mail Access Protocol", "spanish": "Protocolo de Acceso a Mensajes de Internet", "pin": "🔵", "img": "Un usuario leyendo sus cartas a través de un cristal sin sacarlas de la oficina postal.", "hw": "Servidores de correo electrónico.", "usr": "Usuarios de correo que leen sus mensajes sincronizados desde múltiples dispositivos." },
+      { "acronym": "POP3", "english": "Post Office Protocol v3", "spanish": "Protocolo de Oficina de Correos versión 3", "pin": "🔵", "img": "Un usuario sacando todas sus cartas del buzón para llevárselas a casa.", "hw": "Servidores de correo electrónico.", "usr": "Usuarios que descargan sus correos a un solo dispositivo localmente." },
+      { "acronym": "SIP", "english": "Session Initiation Protocol", "spanish": "Protocolo de Iniciación de Sesión", "pin": "🔵", "img": "Un telefonista digital estableciendo la conexión antes de que empiece la voz.", "hw": "Conmutadores IP (PBX), Teléfonos IP, Servidores Proxy SIP.", "usr": "Empresas con telefonía IP y servicios de llamadas por internet." },
+      { "acronym": "RTP", "english": "Real-Time Transport Protocol", "spanish": "Protocolo de Transporte en Tiempo Real", "pin": "🔵 / 🟢", "img": "Un metrónomo musical poniendo marcas de tiempo a los paquetes de audio.", "hw": "Servidores de streaming, terminales de videoconferencia, teléfonos IP.", "usr": "Aplicaciones de voz y video en streaming en vivo." },
+      { "acronym": "SSL", "english": "Secure Sockets Layer", "spanish": "Capa de Sockets Seguros", "pin": "🔵 / 🟢", "img": "Un candado de cristal protegiendo el socket de la aplicación.", "hw": "Servidores web antiguos (tecnología obsoleta reemplazada por TLS).", "usr": "Sistemas heredados que requerían cifrado web básico." },
+      { "acronym": "TLS", "english": "Transport Layer Security", "spanish": "Seguridad de la Capa de Transporte", "pin": "🔵 / 🟢", "img": "Un escudo de energía moderno que reemplazó a SSL para el comercio seguro.", "hw": "Aceleradores SSL/TLS de hardware, Servidores web modernos.", "usr": "Cualquier sitio web seguro actual (HTTPS), aplicaciones bancarias y de mensajería." },
+      /* BLOQUES 6 A 9 AÑADIDOS CORRECTAMENTE */
+      { "acronym": "F/UTP", "english": "Foiled Unshielded Twisted Pair", "spanish": "Par trenzado no apantallado con blindaje global de lámina", "pin": "🟡", "img": "Un cable de red cuya funda exterior es de papel de aluminio brillante, protegiendo los hilos interiores.", "hw": "Cables de red con blindaje global de aluminio y conectores RJ-45.", "usr": "Instalaciones de red para reducir la interferencia electromagnética externa." },
+      { "acronym": "S/FTP", "english": "Screened Foiled Twisted Pair", "spanish": "Par trenzado con blindaje de lámina por par y malla global", "pin": "🟡", "img": "Un cable blindado con \"armadura\" de malla metálica y cada par envuelto individualmente en papel plata.", "hw": "Cables de red de ultra alta categoría para centros de datos.", "usr": "Infraestructuras de red críticas con máxima exigencia de aislamiento de ruido." },
+      { "acronym": "VDSL/VDSL2", "english": "Very high speed Digital Subscriber Line", "spanish": "Línea de suscriptor digital de muy alta velocidad", "pin": "🟡", "img": "Un cable de cobre emitiendo ráfagas de energía blanca ultra rápidas, superando al ADSL tradicional.", "hw": "Modems VDSL, DSLAMs avanzados en centrales telefónicas.", "usr": "Usuarios residenciales con acceso a internet de banda ancha de alta velocidad sobre cobre." },
+      { "acronym": "AON", "english": "Active Optical Network", "spanish": "Red óptica activa", "pin": "🟠", "img": "Un switch eléctrico en medio de una red de fibra que requiere energía para dirigir la luz.", "hw": "Conmutadores y enrutadores ópticos activos con alimentación eléctrica.", "usr": "Operadores de telecomunicaciones para redes de fibra con gestión activa de tráfico." },
+      { "acronym": "ONT", "english": "Optical Network Terminator", "spanish": "Terminación de red óptica", "pin": "🟡", "img": "Una pequeña caja de cristal en la pared de una casa que convierte la luz de la fibra en electricidad para el router.", "hw": "Dispositivos ONT, Conversores de medios ópticos a Ethernet.", "usr": "Hogares y oficinas con conexiones FTTH." },
+      { "acronym": "OLT", "english": "Optical Line Terminator", "spanish": "Terminación de línea óptica", "pin": "🟠", "img": "Un estante masivo en la central telefónica que gestiona miles de conexiones de fibra hacia los hogares.", "hw": "Chasis OLT de alta densidad en centros de datos de operadores.", "usr": "Proveedores de internet de fibra óptica para gestionar múltiples usuarios." },
+      { "acronym": "WDM", "english": "Wavelength Division Multiplexing", "spanish": "Multiplexión por división de longitud de onda", "pin": "🟡", "img": "Un prisma que une láseres de colores (rojo, verde, azul) en un solo hilo de vidrio.", "hw": "Multiplexores ópticos y módulos láser de múltiples longitudes de onda.", "usr": "Operadores de redes de fibra óptica para aumentar la capacidad de transmisión." },
+      { "acronym": "DWDM", "english": "Dense Wavelength Division Multiplexing", "spanish": "Multiplexión por división de longitud de onda densa", "pin": "🟡", "img": "Un arcoíris masivo con cientos de colores apretados viajando por una sola fibra óptica.", "hw": "Transmisores láser de alta precisión y multiplexores densos.", "usr": "Redes troncales de telecomunicaciones de larga distancia y alta capacidad." },
+      { "acronym": "ISM", "english": "Industrial, Scientific, and Medical", "spanish": "Banda industrial, científica y médica", "pin": "🟡", "img": "Un microondas, un teléfono inalámbrico y una laptop compartiendo una misma \"nube\" de frecuencia de 2.4 GHz.", "hw": "Routers Wi-Fi, dispositivos Bluetooth, hornos microondas.", "usr": "Público general utilizando dispositivos inalámbricos de uso libre." },
+      { "acronym": "GEO", "english": "Geostationary Earth Orbit", "spanish": "Órbita terrestre geoestacionaria", "pin": "🟡", "img": "Un satélite que parece \"congelado\" en el cielo a 35,800 km de altura sobre el ecuador.", "hw": "Satélites geoestacionarios de gran tamaño, antenas parabólicas fijas.", "usr": "Servicios de televisión satelital y telecomunicaciones de cobertura fija." },
+      { "acronym": "MEO", "english": "Medium Earth Orbit", "spanish": "Órbita terrestre media", "pin": "🟡", "img": "Un satélite GPS orbitando a media altura entre la Tierra y los satélites geoestacionarios.", "hw": "Constelaciones de satélites de navegación y comunicación.", "usr": "Sistemas de posicionamiento global (GPS) y navegación." },
+      { "acronym": "LEO", "english": "Low Earth Orbit", "spanish": "Órbita terrestre baja", "pin": "🟡", "img": "Un satélite pequeño girando a gran velocidad muy cerca de la superficie terrestre (como los de Iridium).", "hw": "Constelaciones de satélites de baja latencia, terminales de usuario motorizadas.", "usr": "Usuarios de internet satelital de alta velocidad y baja latencia." },
+      { "acronym": "VSAT", "english": "Very Small Aperture Terminal", "spanish": "Terminal de apertura muy pequeña", "pin": "🟡", "img": "Una antena parabólica doméstica de menos de 1 metro apuntando directamente a un satélite.", "hw": "Antenas parabólicas pequeñas, modems satelitales.", "usr": "Zonas remotas y empresas que requieren conectividad satelital directa." },
+      { "acronym": "MIMO", "english": "Multiple Input Multiple Output", "spanish": "Múltiples entradas, múltiples salidas", "pin": "🟡", "img": "Un router con 4 antenas enviando 4 chorros de datos simultáneos hacia una laptop.", "hw": "Routers y dispositivos inalámbricos con múltiples antenas y chips avanzados.", "usr": "Dispositivos Wi-Fi y redes móviles modernas para mejorar la tasa de transferencia." },
+      { "acronym": "MU-MIMO", "english": "Multi-User MIMO", "spanish": "MIMO multiusuario", "pin": "🟠", "img": "Un punto de acceso inteligente enviando rayos de datos a tres teléfonos diferentes al mismo tiempo.", "hw": "Puntos de acceso Wi-Fi 5 y Wi-Fi 6 avanzados.", "usr": "Entornos con múltiples usuarios conectados simultáneamente." },
+      { "acronym": "WCDMA", "english": "Wideband Code Division Multiple Access", "spanish": "Acceso múltiple por división de código de banda ancha", "pin": "🟠", "img": "Una antena celular 3G que permite a muchos usuarios hablar usando códigos en lugar de frecuencias.", "hw": "Estaciones base 3G y terminales móviles compatibles.", "usr": "Operadores de telefonía móvil y usuarios de redes 3G." },
+      { "acronym": "UMTS", "english": "Universal Mobile Telecommunications System", "spanish": "Sistema universal de telecomunicaciones móviles", "pin": "🔴", "img": "El logo global de la red 3G que une voz y datos en smartphones.", "hw": "Núcleo de red y torres de telefonía móvil 3G.", "usr": "Usuarios de servicios móviles de tercera generación." },
+      { "acronym": "HSPA", "english": "High Speed Packet Access", "spanish": "Acceso de paquetes de alta velocidad", "pin": "🟠", "img": "Un cohete naranja acelerando una conexión 3G hacia velocidades de banda ancha.", "hw": "Actualizaciones de hardware en estaciones base y modems celulares.", "usr": "Usuarios móviles con acceso a internet móvil 3G mejorado (HSDPA/HSUPA)." },
+      { "acronym": "GPRS", "english": "General Packet Radio Service", "spanish": "Servicio general de paquetes vía radio", "pin": "🟠", "img": "Un puente que permite que las redes de voz antiguas manden los primeros paquetes de datos (Internet 2.5G).", "hw": "Equipos de conmutación de paquetes integrados en redes GSM.", "usr": "Usuarios de telefonía móvil inicial para transmisión de datos móviles básicos." },
+      { "acronym": "SGSN", "english": "Serving GPRS Support Node", "spanish": "Nodo de soporte GPRS servidor", "pin": "🔴", "img": "Un router celular que sabe exactamente en qué celda estás y te entrega tus mensajes.", "hw": "Servidores y routers de control en el núcleo de red móvil 2.5G/3G.", "usr": "Operadores móviles para gestionar la movilidad y entrega de paquetes a los usuarios." },
+      { "acronym": "GGSN", "english": "Gateway GPRS Support Node", "spanish": "Nodo de soporte GPRS pasarela", "pin": "🔴", "img": "La gran puerta fronteriza que conecta a todos los móviles con la Internet pública.", "hw": "Routers de pasarela en la red central de telecomunicaciones móviles.", "usr": "Operadores móviles para interconectar la red celular con internet." },
+      { "acronym": "UE", "english": "User Equipment", "spanish": "Equipo de usuario", "pin": "🔵 / 🟡", "img": "Un smartphone o tablet siendo procesado como un objeto final de la red LTE.", "hw": "Smartphones, tablets, módems USB celulares.", "usr": "Usuarios finales de redes de telefonía móvil." },
+      { "acronym": "eNodeB", "english": "Evolved Node B", "spanish": "Nodo B evolucionado", "pin": "🟡 / 🟠", "img": "La torre de telefonía inteligente de 4G que toma decisiones de red sin ayuda externa.", "hw": "Estaciones base de celdas móviles 4G LTE.", "usr": "Operadores de telecomunicaciones para proveer cobertura y acceso radioeléctrico 4G." },
+      { "acronym": "MME", "english": "Mobility Management Entity", "spanish": "Entidad de gestión de la movilidad", "pin": "🔴", "img": "Un oficial de tránsito digital que gestiona tu permiso para entrar a la red LTE.", "hw": "Servidores de control en el núcleo de la red EPC (4G).", "usr": "Operadores de red para autenticación, seguimiento y gestión de handovers." },
+      { "acronym": "P-GW", "english": "Packet Data Network Gateway", "spanish": "Pasarela de la red de datos empaquetados", "pin": "🔴", "img": "Un router LTE que te asigna tu dirección IP y te da salida a Google.", "hw": "Routers de borde del núcleo de red móvil evolucionado.", "usr": "Dispositivos móviles para conectarse a redes externas e internet." },
+      { "acronym": "S-GW", "english": "Service Gateway", "spanish": "Pasarela de servicio", "pin": "🔴", "img": "Un punto de anclaje donde tus datos se mantienen fluyendo mientras viajas de una torre a otra.", "hw": "Routers de conmutación en el núcleo de red móvil.", "usr": "Red móvil para enrutar paquetes de datos de los usuarios entre estaciones base." },
+      { "acronym": "HSS", "english": "Home Subscriber Server", "spanish": "Servidor de abonado doméstico", "pin": "🔵", "img": "Una base de datos de oro que guarda tu perfil, plan de datos y contraseña secreta.", "hw": "Servidores de bases de datos centrales de alta disponibilidad.", "usr": "Operadores móviles para la gestión de perfiles de usuario y autenticación." },
+      { "acronym": "EPC", "english": "Evolved Packet Core", "spanish": "Núcleo de paquetes mejorado", "pin": "🔴", "img": "El corazón de la red 4G, un sistema completamente basado en IP.", "hw": "Conjunto de servidores, pasarelas y routers de la red central LTE.", "usr": "Operadores móviles para la gestión integral de datos y control 4G." },
+      { "acronym": "BER", "english": "Bit Error Rate", "spanish": "Tasa de errores de bit", "pin": "🟡", "img": "Una cadena de bits donde algunos ceros se han vuelto unos por culpa del ruido.", "hw": "Analizadores de protocolos y medidores de calidad de canal físico.", "usr": "Ingenieros de telecomunicaciones para medir la confiabilidad de un enlace." },
+      { "acronym": "ASK", "english": "Amplitude Shift Keying", "spanish": "Modulación por desplazamiento de amplitud", "pin": "🟡", "img": "Una onda de radio que sube y baja su altura para representar 1s y 0s.", "hw": "Moduladores y demoduladores digitales en circuitos de radiofrecuencia básica.", "usr": "Sistemas de transmisión de datos digitales simples y controles remotos." },
+      { "acronym": "FSK", "english": "Frequency Shift Keying", "spanish": "Modulación por desplazamiento de frecuencia", "pin": "🟡", "img": "Una onda que se aprieta (rápida) o se estira (lenta) para enviar datos.", "hw": "Modems y circuitos de transmisión por radiofrecuencia.", "usr": "Sistemas de telemetría, identificadores de llamadas y modems antiguos." },
+      { "acronym": "PSK", "english": "Phase Shift Keying", "spanish": "Modulación por desplazamiento de fase", "pin": "🟡", "img": "Una onda que salta bruscamente de dirección para indicar un cambio de bit.", "hw": "Transmisores y receptores digitales de alta eficiencia espectral.", "usr": "Comunicaciones satelitales, redes Wi-Fi y sistemas de transmisión digital." },
+      { "acronym": "QAM", "english": "Quadrature Amplitude Modulation", "spanish": "Modulación de amplitud en cuadratura", "pin": "🟡", "img": "Un tablero de puntos (constelación) donde cada punto representa múltiples bits combinando fase y altura.", "hw": "Modems de cable, equipos de microondas digitales y routers avanzados.", "usr": "Sistemas de televisión por cable, Wi-Fi de alta velocidad y redes 4G/5G." }
     ];
 
     const layerDefs = {
@@ -1540,23 +853,19 @@
       }
     };
 
-    // ==========================================
-    // 3. ESTADOS Y SISTEMAS (Limitador y Gamificación)
-    // ==========================================
     let activeData = [...dataset];
     let currentIndex = 0;
     let currentFilter = 'ALL';
     
-    // Control de límite de tiempo
     let isNavigationLocked = false;
     let lockTimer = null;
     
-    // Gamificación
     const viewedCards = new Set();
     let lastRewardMilestone = 0;
 
     function parsePins(pinStr) {
       const badges = [];
+      if (!pinStr) return badges;
       if (pinStr.includes('🔵')) badges.push({ code: 'APP', icon: '🔵', border: 'var(--app-color)' });
       if (pinStr.includes('🟢')) badges.push({ code: 'TRA', icon: '🟢', border: 'var(--tra-color)' });
       if (pinStr.includes('🔴')) badges.push({ code: 'NET', icon: '🔴', border: 'var(--net-color)' });
@@ -1579,22 +888,17 @@
     }
 
     function checkGamification() {
-      // Agregamos la tarjeta actual a nuestro registro
       viewedCards.add(activeData[currentIndex].acronym);
       
-      // Si llegamos a un múltiplo de 3 y es un récord nuevo
       if (viewedCards.size % 3 === 0 && viewedCards.size > lastRewardMilestone) {
         lastRewardMilestone = viewedCards.size;
-        
         playSound('fanfare');
         
-        // Mostrar Toast
         const toast = document.getElementById('toastMsg');
         const level = viewedCards.size / 3;
         document.getElementById('toastText').innerHTML = `¡Nivel ${level} Alcanzado!<br>Revela otras 3 tarjetas para subir de nivel.`;
         toast.classList.add('show');
         
-        // Destello en el fondo
         document.body.style.boxShadow = "inset 0 0 80px rgba(56, 189, 248, 0.4)";
         setTimeout(() => document.body.style.boxShadow = "none", 1000);
 
@@ -1609,7 +913,6 @@
 
       const item = activeData[currentIndex];
       
-      // FRENTE
       document.getElementById('frontAcronym').textContent = item.acronym;
       document.getElementById('frontEn').textContent = item.english;
       document.getElementById('frontEs').textContent = item.spanish;
@@ -1630,18 +933,15 @@
         badgesContainer.appendChild(btn);
       });
 
-      // REVERSO
       document.getElementById('backEn').textContent = item.english;
       document.getElementById('backEs').textContent = item.spanish;
       document.getElementById('backMnemonic').textContent = item.img;
       document.getElementById('backHw').textContent = item.hw;
       document.getElementById('backUsers').textContent = item.usr;
 
-      // PROGRESO Y CONTROLES
       document.getElementById('cardCounter').textContent = `${currentIndex + 1} / ${activeData.length}`;
       document.getElementById('progressBar').style.width = `${((currentIndex + 1) / activeData.length) * 100}%`;
       
-      // Iniciar el candado de 3 segundos para que lean la tarjeta
       lockNavigation();
     }
 
@@ -1649,7 +949,6 @@
       if (activeData.length === 0) return;
       initAudio();
       
-      // Bloqueo si el usuario intenta saltar antes de los 3 segundos
       if (isNavigationLocked) {
         playSound('error');
         const card = document.getElementById('flashcard');
@@ -1678,7 +977,6 @@
           ? 'slideInRight 0.3s forwards' 
           : 'slideOutLeft 0.3s reverse forwards';
           
-        // Gamificación: Verificamos nivel cada vez que se navega a una tarjeta nueva
         checkGamification();
       }, 250);
     }
@@ -1696,9 +994,6 @@
       }
     }
 
-    // ==========================================
-    // 4. MODAL Y EFECTO SHATTER
-    // ==========================================
     function openLayerModal(code) {
       initAudio();
       const def = layerDefs[code];
@@ -1761,9 +1056,6 @@
       }, 400);
     });
 
-    // ==========================================
-    // 5. BUSCADOR Y GESTOS TÁCTILES
-    // ==========================================
     function applyFilters() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
       activeData = dataset.filter(item => {
@@ -1805,7 +1097,6 @@
       initAudio(); playSound('flip');
     }
 
-    // SWIPE
     let touchstartX = 0, touchendX = 0;
     document.getElementById('stageArea').addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
     document.getElementById('stageArea').addEventListener('touchend', e => { 
@@ -1814,14 +1105,11 @@
       if (touchendX - touchstartX > 50) navigateCard(-1);
     });
 
-    // Iniciar app
     updateCardView();
-    // Añadir tarjeta actual como primera vista
     viewedCards.add(activeData[0].acronym);
     
     document.body.addEventListener('touchstart', initAudio, { once: true });
     document.body.addEventListener('click', initAudio, { once: true });
-
   </script>
 </body>
 </html>
