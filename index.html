@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glosario Técnico de Redes de Computadoras</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1.5rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .search-box {
+      position: sticky;
+      top: 1rem;
+      z-index: 10;
+      background: var(--bg);
+      padding: 0.5rem 0 1.5rem 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+
+    .stats {
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .table-wrapper {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .acronym {
+      font-weight: 700;
+      color: var(--primary);
+      font-family: monospace;
+      font-size: 1.05rem;
+    }
+
+    .no-results {
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      th, td {
+        padding: 0.75rem 0.85rem;
+      }
+      .acronym {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Glosario Técnico de Redes de Computadoras</h1>
+      <p class="subtitle">Consulta rápida de acrónimos y terminología de redes</p>
+    </header>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar acrónimo, término en inglés o descripción..." oninput="filterData()">
+    </div>
+
+    <div class="stats">
+      <span>Términos mostrados: <strong id="visibleCount">0</strong></span>
+      <span>Total: <strong id="totalCount">0</strong></span>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="glossaryTable">
+        <thead>
+          <tr>
+            <th style="width: 15%;">Acrónimo</th>
+            <th style="width: 35%;">Nombre en Inglés</th>
+            <th style="width: 50%;">Traducción / Descripción</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Las filas se cargan dinámicamente mediante JS -->
+        </tbody>
+      </table>
+      <div id="noResults" class="no-results">
+        No se encontraron acrónimos que coincidan con la búsqueda.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Base de datos integrada con los acrónimos extraídos del glosario
+    const data = [
+      { "acronym": "AES", "name": "Advanced Encryption Standard", "desc": "Estándar de Cifrado Avanzado." },
+      { "acronym": "ARP", "name": "Address Resolution Protocol", "desc": "Protocolo de Resolución de Direcciones." },
+      { "acronym": "BGP", "name": "Border Gateway Protocol", "desc": "Protocolo de Pasarela de Frontera; protocolo de enrutamiento exterior en Internet." },
+      { "acronym": "DNS", "name": "Domain Name System", "desc": "Sistema de Nombres de Dominio; servicio para mapear nombres de host en direcciones de red." },
+      { "acronym": "ICMP", "name": "Internet Control Message Protocol", "desc": "Protocolo de Mensajes de Control de Internet; apoyo para diagnóstico en IP." },
+      { "acronym": "IP", "name": "Internet Protocol", "desc": "Protocolo de Internet; pilar de la capa de red encargado del enrutamiento de paquetes." },
+      { "acronym": "IPv4", "name": "Internet Protocol version 4", "desc": "Protocolo de 32 bits dividido en 4 octetos." },
+      { "acronym": "IPv6", "name": "Internet Protocol version 6", "desc": "Protocolo de 128 bits en notación hexadecimal." },
+      { "acronym": "NAT", "name": "Network Address Translation", "desc": "Traducción de Direcciones de Red." },
+      { "acronym": "OSI", "name": "Open Systems Interconnection", "desc": "Modelo de referencia de siete capas para el diseño de protocolos de red." },
+      { "acronym": "SDN", "name": "Software-Defined Networking", "desc": "Redes Definidas por Software; arquitectura con control programable por software." },
+      { "acronym": "TCP", "name": "Transmission Control Protocol", "desc": "Protocolo de Control de Transmisión; orientado a la conexión y fiable." },
+      { "acronym": "UDP", "name": "User Datagram Protocol", "desc": "Protocolo de Datagramas de Usuario; no fiable y sin conexión." },
+      { "acronym": "VPN", "name": "Virtual Private Network", "desc": "Red Privada Virtual." },
+      { "acronym": "WiFi", "name": "Wireless Fidelity", "desc": "Nombre común del estándar IEEE 802.11." }
+    ];
+
+    const tableBody = document.getElementById('tableBody');
+    const searchInput = document.getElementById('searchInput');
+    const visibleCount = document.getElementById('visibleCount');
+    const totalCount = document.getElementById('totalCount');
+    const noResults = document.getElementById('noResults');
+
+    totalCount.textContent = data.length;
+
+    function renderTable(items) {
+      tableBody.innerHTML = '';
+      if (items.length === 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+        items.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="acronym">${escapeHtml(item.acronym)}</td>
+            <td>${escapeHtml(item.name)}</td>
+            <td>${escapeHtml(item.desc)}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+      visibleCount.textContent = items.length;
+    }
+
+    function filterData() {
+      const query = searchInput.value.toLowerCase().trim();
+      if (!query) {
+        renderTable(data);
+        return;
+      }
+      const filtered = data.filter(item => 
+        item.acronym.toLowerCase().includes(query) ||
+        item.name.toLowerCase().includes(query) ||
+        item.desc.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Carga inicial
+    renderTable(data);
+  </script>
+</body>
+</html>
