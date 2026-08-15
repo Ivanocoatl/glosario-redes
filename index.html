@@ -2,23 +2,28 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glosario Técnico de Redes de Computadoras</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Flashcards & Glosario Interactivo de Redes</title>
   <style>
     :root {
-      --primary: #2563eb;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --app-color: #3b82f6;
+      --tra-color: #22c55e;
+      --net-color: #ef4444;
+      --lin-color: #f97316;
+      --phy-color: #eab308;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -26,225 +31,522 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding: 1.5rem 1rem;
+      padding-bottom: 90px;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 1rem 0.5rem 1rem;
+      border-bottom: 1px solid var(--card-border);
     }
 
-    header {
-      margin-bottom: 2rem;
+    .title-area {
       text-align: center;
+      margin-bottom: 0.75rem;
     }
 
     h1 {
-      font-size: 1.8rem;
-      color: #0f172a;
-      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     p.subtitle {
+      font-size: 0.75rem;
       color: var(--text-muted);
-      font-size: 0.95rem;
     }
 
-    .search-box {
-      position: sticky;
-      top: 1rem;
-      z-index: 10;
-      background: var(--bg);
-      padding: 0.5rem 0 1.5rem 0;
+    .search-bar {
+      margin-bottom: 0.5rem;
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 0.85rem 1.25rem;
-      font-size: 1rem;
-      border: 2px solid var(--border);
-      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
       background: var(--card-bg);
-      box-shadow: var(--shadow);
+      color: var(--text);
       outline: none;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s;
     }
 
     input[type="text"]:focus {
       border-color: var(--primary);
     }
 
-    .stats {
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .filters {
       display: flex;
-      justify-content: space-between;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: none;
     }
 
-    .table-wrapper {
-      background: var(--card-bg);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th, td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      background-color: #f1f5f9;
-      font-weight: 600;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #475569;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover {
-      background-color: #f8fafc;
-    }
-
-    .acronym {
-      font-weight: 700;
-      color: var(--primary);
-      font-family: monospace;
-      font-size: 1.05rem;
-    }
-
-    .no-results {
-      padding: 3rem;
-      text-align: center;
-      color: var(--text-muted);
+    .filters::-webkit-scrollbar {
       display: none;
     }
 
-    @media (max-width: 600px) {
-      th, td {
-        padding: 0.75rem 0.85rem;
-      }
-      .acronym {
-        font-size: 0.95rem;
-      }
+    .filter-btn {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: #0f172a;
+      border-color: var(--primary);
+    }
+
+    .container {
+      padding: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .block-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin: 1.5rem 0 0.75rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .block-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--card-border);
+    }
+
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .card:active {
+      transform: scale(0.98);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .acronym-badge {
+      font-size: 1.25rem;
+      font-weight: 900;
+      font-family: monospace;
+      color: var(--text);
+    }
+
+    .pins-container {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .pin-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .term-english {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .term-spanish {
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .mnemonic-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 3px solid var(--primary);
+      padding: 0.6rem 0.8rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .practice-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.98);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      padding: 1.5rem;
+      justify-content: space-between;
+    }
+
+    .practice-overlay.active {
+      display: flex;
+    }
+
+    .practice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .flashcard {
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.2);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .flashcard-acronym {
+      font-size: 2.5rem;
+      font-weight: 900;
+      font-family: monospace;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .flashcard-prompt {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .flashcard-answer {
+      display: none;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    .flashcard.flipped .flashcard-prompt {
+      display: none;
+    }
+
+    .flashcard.flipped .flashcard-answer {
+      display: block;
+    }
+
+    .btn-action {
+      background: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-weight: 700;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .floating-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      color: #0f172a;
+      border: none;
+      border-radius: 30px;
+      padding: 0.85rem 1.5rem;
+      font-weight: 800;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4);
+      cursor: pointer;
+      z-index: 90;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <h1>Glosario Técnico de Redes de Computadoras</h1>
-      <p class="subtitle">Consulta rápida de acrónimos y terminología de redes</p>
-    </header>
-
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Buscar acrónimo, término en inglés o descripción..." oninput="filterData()">
+  <div class="header">
+    <div class="title-area">
+      <h1>Glosario Técnico de Redes</h1>
+      <p class="subtitle">Acrónimos, Capas OSI/TCP-IP e Imágenes Mentales</p>
     </div>
 
-    <div class="stats">
-      <span>Términos mostrados: <strong id="visibleCount">0</strong></span>
-      <span>Total: <strong id="totalCount">0</strong></span>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="🔍 Buscar acrónimo, término o capa..." oninput="filterData()">
     </div>
 
-    <div class="table-wrapper">
-      <table id="glossaryTable">
-        <thead>
-          <tr>
-            <th style="width: 15%;">Acrónimo</th>
-            <th style="width: 35%;">Nombre en Inglés</th>
-            <th style="width: 50%;">Traducción / Descripción</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <!-- Las filas se cargan dinámicamente mediante JS -->
-        </tbody>
-      </table>
-      <div id="noResults" class="no-results">
-        No se encontraron acrónimos que coincidan con la búsqueda.
-      </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('ALL', this)">Todos</button>
+      <button class="filter-btn" style="border-color: var(--app-color);" onclick="setFilter('APP', this)">🔵 APP</button>
+      <button class="filter-btn" style="border-color: var(--tra-color);" onclick="setFilter('TRA', this)">🟢 TRA</button>
+      <button class="filter-btn" style="border-color: var(--net-color);" onclick="setFilter('NET', this)">🔴 NET</button>
+      <button class="filter-btn" style="border-color: var(--lin-color);" onclick="setFilter('LIN', this)">🟠 LIN</button>
+      <button class="filter-btn" style="border-color: var(--phy-color);" onclick="setFilter('PHY', this)">🟡 PHY</button>
     </div>
   </div>
 
+  <div class="container" id="cardsContainer"></div>
+
+  <button class="floating-btn" onclick="startPractice()">⚡ Modo Flashcards</button>
+
+  <div class="practice-overlay" id="practiceOverlay">
+    <div class="practice-header">
+      <span style="font-weight: 700; color: var(--primary);" id="practiceProgress">1 / 59</span>
+      <button style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem;" onclick="closePractice()">✕</button>
+    </div>
+
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="flashcard-acronym" id="cardAcronym">TCP</div>
+      <div class="flashcard-prompt">Toca para revelar significado e imagen mental</div>
+      <div class="flashcard-answer" id="cardAnswer">
+        <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.3rem;" id="cardEnglish"></div>
+        <div style="margin-bottom: 1rem;" id="cardSpanish"></div>
+        <div class="mnemonic-box" style="text-align: left;">
+          <span>🧠</span>
+          <span id="cardMnemonic"></span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-action" onclick="nextCard()">Siguiente Acrónimo ➔</button>
+  </div>
+
   <script>
-    // Base de datos integrada con los acrónimos extraídos del glosario
-    const data = [
-      { "acronym": "AES", "name": "Advanced Encryption Standard", "desc": "Estándar de Cifrado Avanzado." },
-      { "acronym": "ARP", "name": "Address Resolution Protocol", "desc": "Protocolo de Resolución de Direcciones." },
-      { "acronym": "BGP", "name": "Border Gateway Protocol", "desc": "Protocolo de Pasarela de Frontera; protocolo de enrutamiento exterior en Internet." },
-      { "acronym": "DNS", "name": "Domain Name System", "desc": "Sistema de Nombres de Dominio; servicio para mapear nombres de host en direcciones de red." },
-      { "acronym": "ICMP", "name": "Internet Control Message Protocol", "desc": "Protocolo de Mensajes de Control de Internet; apoyo para diagnóstico en IP." },
-      { "acronym": "IP", "name": "Internet Protocol", "desc": "Protocolo de Internet; pilar de la capa de red encargado del enrutamiento de paquetes." },
-      { "acronym": "IPv4", "name": "Internet Protocol version 4", "desc": "Protocolo de 32 bits dividido en 4 octetos." },
-      { "acronym": "IPv6", "name": "Internet Protocol version 6", "desc": "Protocolo de 128 bits en notación hexadecimal." },
-      { "acronym": "NAT", "name": "Network Address Translation", "desc": "Traducción de Direcciones de Red." },
-      { "acronym": "OSI", "name": "Open Systems Interconnection", "desc": "Modelo de referencia de siete capas para el diseño de protocolos de red." },
-      { "acronym": "SDN", "name": "Software-Defined Networking", "desc": "Redes Definidas por Software; arquitectura con control programable por software." },
-      { "acronym": "TCP", "name": "Transmission Control Protocol", "desc": "Protocolo de Control de Transmisión; orientado a la conexión y fiable." },
-      { "acronym": "UDP", "name": "User Datagram Protocol", "desc": "Protocolo de Datagramas de Usuario; no fiable y sin conexión." },
-      { "acronym": "VPN", "name": "Virtual Private Network", "desc": "Red Privada Virtual." },
-      { "acronym": "WiFi", "name": "Wireless Fidelity", "desc": "Nombre común del estándar IEEE 802.11." }
+    const dataset = [
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "PAN", "english": "Personal Area Network", "spanish": "Red de Área Personal", "pin": "🟡 / 🟠", "img": "Un aura de energía azul rodeando a una persona y conectando su reloj, teléfono y audífonos."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "LAN", "english": "Local Area Network", "spanish": "Red de Área Local", "pin": "🟠", "img": "Un edificio de oficinas con cables de luz interconectando todas las computadoras en un solo nudo."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "MAN", "english": "Metropolitan Area Network", "spanish": "Red de Área Metropolitana", "pin": "🔴", "img": "Un mapa de una ciudad con líneas de fibra óptica que unen hospitales, escuelas y alcaldías."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "WAN", "english": "Wide Area Network", "spanish": "Red de Área Amplia", "pin": "🔴", "img": "Un satélite enviando un haz de luz que cruza un océano para unir dos continentes."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "VLAN", "english": "Virtual Local Area Network", "spanish": "Red de Área Local Virtual", "pin": "🟠", "img": "Un switch físico dividido por cristales de colores que separan lógicamente el tráfico de diferentes departamentos."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "VPN", "english": "Virtual Private Network", "spanish": "Red Privada Virtual", "pin": "🔴", "img": "Un túnel blindado que atraviesa una carretera pública (Internet) de forma invisible."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "ISP", "english": "Internet Service Provider", "spanish": "Proveedor de Servicios de Internet", "pin": "🔴", "img": "Una torre de control masiva que distribuye \"grifos\" de datos a miles de hogares."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "AS", "english": "Autonomous System", "spanish": "Sistema Autónomo", "pin": "🔴", "img": "Un castillo amurallado con sus propios mensajeros internos y un puente levadizo para hablar con otros castillos."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "IXP", "english": "Internet Exchange Point", "spanish": "Punto de Intercambio de Internet", "pin": "🔴 / 🟠", "img": "Una estación de trenes futurista donde múltiples redes de ISP intercambian pasajeros (datos)."},
+      {"block": "BLOQUE 1: ALCANCE Y ARQUITECTURA DE RED", "acronym": "CDN", "english": "Content Delivery Network", "spanish": "Red de Distribución de Contenido", "pin": "🔵", "img": "Una red de almacenes locales (servidores) entregando paquetes de video en lugar de traerlos desde una fábrica lejana."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "UTP", "english": "Unshielded Twisted Pair", "spanish": "Par Trenzado no Apantallado", "pin": "🟡", "img": "Ocho hilos de cobre trenzados entre sí como trenzas de colores dentro de una funda de plástico."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "STP", "english": "Shielded Twisted Pair", "spanish": "Par Trenzado Apantallado", "pin": "🟡", "img": "El mismo cable UTP pero envuelto en una armadura de papel de aluminio brillante."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "S/STP", "english": "Screened Shielded Twisted Pair", "spanish": "Par Trenzado con Blindaje Global y por Par", "pin": "🟡", "img": "Cables de cobre con doble protección: cada par tiene su escudo y todo el grupo otro más."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "FTTH", "english": "Fiber To The Home", "spanish": "Fibra hasta el Hogar", "pin": "🟡", "img": "Un hilo de vidrio transparente del grosor de un cabello entrando directamente por el muro de una casa."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "PON", "english": "Passive Optical Network", "spanish": "Red Óptica Pasiva", "pin": "🟡", "img": "Un prisma de cristal que divide un solo rayo láser en múltiples rayos para diferentes casas sin usar electricidad."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "GPON", "english": "Gigabit-capable PON", "spanish": "PON con capacidad de Gigabit", "pin": "🟡", "img": "El mismo prisma pero emitiendo ráfagas de luz ultra rápidas con un cronómetro de oro."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "HFC", "english": "Hybrid Fiber Coax", "spanish": "Híbrido de Fibra y Coaxial", "pin": "🟡", "img": "Un cable grueso de cobre que se conecta a un nodo de luz brillante (fibra) en una esquina de la calle."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "SONET", "english": "Synchronous Optical Network", "spanish": "Red Óptica Síncrona", "pin": "🟡", "img": "Un anillo de fibra óptica gigante que transporta contenedores de datos perfectamente sincronizados por un reloj atómico."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "ADSL", "english": "Asymmetric Digital Subscriber Line", "spanish": "Línea de Suscriptor Digital Asimétrica", "pin": "🟡", "img": "Un cable de teléfono antiguo con dos canales: un tobogán gigante de bajada y uno pequeño de subida."},
+      {"block": "BLOQUE 2: CAPA FÍSICA Y MEDIOS DE TRANSMISIÓN", "acronym": "RFID", "english": "Radio Frequency Identification", "spanish": "Identificación por Radiofrecuencia", "pin": "🟡", "img": "Una pequeña antena en espiral pegada a una etiqueta que brilla al ser tocada por ondas de radio."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "MAC", "english": "Medium Access Control", "spanish": "Control de Acceso al Medio", "pin": "🟠", "img": "Una placa de metal grabada con un número hexadecimal único que identifica a una computadora para siempre."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "NIC", "english": "Network Interface Card", "spanish": "Tarjeta de Interfaz de Red", "pin": "🟠 / 🟡", "img": "Una tarjeta de circuitos con un puerto Ethernet que actúa como el \"traductor\" entre la PC y el cable."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "ARP", "english": "Address Resolution Protocol", "spanish": "Protocolo de Resolución de Direcciones", "pin": "🟠", "img": "Un megáfono gritando en una habitación: \"¿Quién tiene la IP 192.168.1.1? ¡Dígame su nombre MAC!\"."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "PPP", "english": "Point-to-Point Protocol", "spanish": "Protocolo Punto a Punto", "pin": "🟠", "img": "Dos manos robóticas estrechándose a través de un solo cable directo, asegurando que ambos se entienden."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "CSMA/CD", "english": "Carrier Sense Multiple Access with Collision Detection", "spanish": "Acceso Múltiple por Detección de Portadora y Colisiones", "pin": "🟠", "img": "Dos personas tratando de hablar en un pasillo; se detienen cuando sus voces chocan y esperan un tiempo aleatorio."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "CSMA/CA", "english": "Carrier Sense Multiple Access with Collision Avoidance", "spanish": "Acceso Múltiple por Detección de Portadora y Evitación de Colisiones", "pin": "🟠", "img": "Un semáforo inalámbrico que pide permiso antes de permitir que alguien envíe datos por el aire."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "LLC", "english": "Logical Link Control", "spanish": "Control de Enlace Lógico", "pin": "🟠", "img": "Una capa de pegamento transparente que une los diferentes tipos de cables con el software de red."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "CRC", "english": "Cyclic Redundancy Check", "spanish": "Comprobación de Redundancia Cíclica", "pin": "🟠", "img": "Una fórmula matemática de seguridad al final de un paquete que actúa como un sello de garantía de que nada cambió."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "AP", "english": "Access Point", "spanish": "Punto de Acceso", "pin": "🟠", "img": "Una caja con antenas en el techo que emite ondas de radio para conectar dispositivos a la red cableada."},
+      {"block": "BLOQUE 3: CAPA DE ENLACE DE DATOS Y HARDWARE", "acronym": "SSID", "english": "Service Set Identifier", "spanish": "Identificador de Conjunto de Servicio", "pin": "🟠", "img": "Un cartel de neón que dice \"WiFi-Gratis\" sobre una antena, identificando la red inalámbrica."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "IP", "english": "Internet Protocol", "spanish": "Protocolo de Internet", "pin": "🔴", "img": "Un sobre postal universal que puede viajar en cualquier medio (barco, avión, camión) para llegar a su destino."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "IPv4", "english": "IP version 4", "spanish": "Protocolo de Internet versión 4", "pin": "🔴", "img": "Un sistema de 4 bloques de números (32 bits) que se está quedando sin espacio."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "IPv6", "english": "IP version 6", "spanish": "Protocolo de Internet versión 6", "pin": "🔴", "img": "Un sistema masivo de 8 bloques hexadecimales (128 bits) que ofrece direcciones para cada grano de arena del mundo."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "NAT", "english": "Network Address Translation", "spanish": "Traducción de Direcciones de Red", "pin": "🔴", "img": "Un recepcionista de hotel (router) que recibe paquetes para muchos huéspedes usando una sola dirección externa."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "ICMP", "english": "Internet Control Message Protocol", "spanish": "Protocolo de Mensajes de Control de Internet", "pin": "🔴", "img": "Un botiquín de primeros auxilios con señales de error que informan cuando un destino es inalcanzable."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "BGP", "english": "Border Gateway Protocol", "spanish": "Protocolo de Puerta de Enlace de Frontera", "pin": "🔴", "img": "Un grupo de embajadores negociando las mejores rutas entre diferentes países (Sistemas Autónomos)."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "OSPF", "english": "Open Shortest Path First", "spanish": "Abrir Primero la Ruta más Corta", "pin": "🔴", "img": "Un mapa topológico que se actualiza en tiempo real para encontrar el camino más rápido dentro de una red."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "CIDR", "english": "Classless Interdomain Routing", "spanish": "Enrutamiento Interdominio sin Clases", "pin": "🔴", "img": "Una regla (prefijo /x) que corta trozos exactos de direcciones IP para que no se desperdiciaten."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "MPLS", "english": "MultiProtocol Label Switching", "spanish": "Conmutación de Etiquetas Multiprotocolo", "pin": "🔴 / 🟠 (Capa 2.5)", "img": "Un paquete con una etiqueta de color neón que le permite pasar por una \"vía rápida\" sin inspección."},
+      {"block": "BLOQUE 4: CAPA DE RED E INTERNET", "acronym": "DHCP", "english": "Dynamic Host Configuration Protocol", "spanish": "Protocolo de Configuración Dinámica de Host", "pin": "🔴", "img": "Una máquina expendedora que entrega direcciones IP temporales a los dispositivos que se conectan."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "TCP", "english": "Transmission Control Protocol", "spanish": "Protocolo de Control de Transmisión", "pin": "🟢", "img": "Un mensajero que pide firma de recibido por cada paquete y los entrega en orden perfecto."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "UDP", "english": "User Datagram Protocol", "spanish": "Protocolo de Datagramas de Usuario", "pin": "🟢", "img": "Un cañón disparando paquetes de datos a gran velocidad sin detenerse a ver si llegaron."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "RTP", "english": "Real-Time Transport Protocol", "spanish": "Protocolo de Transporte en Tiempo Real", "pin": "🟢 / 🔵", "img": "Un metrónomo musical que pone marcas de tiempo a los paquetes de audio para que suenen fluidos."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "SCTP", "english": "Stream Control Transmission Protocol", "spanish": "Protocolo de Control de Transmisión de Flujo", "pin": "🟢", "img": "Un camión de transporte blindado con múltiples motores para misiones críticas que no pueden fallar."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "RTT", "english": "Round-Trip Time", "spanish": "Tiempo de Ida y Vuelta", "pin": "🟢", "img": "Un bumerán digital con un cronómetro que mide cuánto tarda en ir y volver del servidor."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "MSS", "english": "Maximum Segment Size", "spanish": "Tamaño Máximo de Segmento", "pin": "🟢", "img": "Una caja de embalaje que indica exactamente cuántos datos caben antes de que el paquete se rompa."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "MTU", "english": "Maximum Transmission Unit", "spanish": "Unidad Máxima de Transmisión", "pin": "🟠 / 🔴", "img": "La altura máxima de un túnel que limita el tamaño de los camiones (paquetes) que pueden pasar."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "QUIC", "english": "Quick UDP Internet Connection", "spanish": "Conexión UDP Rápida de Internet", "pin": "🟢", "img": "Un rayo de luz que combina la velocidad de UDP con la seguridad de TCP para Google Chrome."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "SSL", "english": "Secure Sockets Layer", "spanish": "Capa de Sockets Seguros", "pin": "🟢 / 🔵", "img": "Un candado de cristal envolviendo una conexión de transporte para proteger la privacidad."},
+      {"block": "BLOQUE 5: CAPA DE TRANSPORTE", "acronym": "TLS", "english": "Transport Layer Security", "spanish": "Seguridad de la Capa de Transporte", "pin": "🟢 / 🔵", "img": "El sucesor moderno de SSL; un escudo de energía transparente que cifra los datos proceso a proceso."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "HTTP", "english": "HyperText Transfer Protocol", "spanish": "Protocolo de Transferencia de Hipertexto", "pin": "🔵", "img": "Una mano pidiendo una hoja de papel (página web) a una biblioteca gigante."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "HTTPS", "english": "HTTP Secure", "spanish": "HTTP Seguro", "pin": "🔵", "img": "La misma mano pero usando guantes blindados y entregando el papel en una caja fuerte."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "DNS", "english": "Domain Name System", "spanish": "Sistema de Nombres de Dominio", "pin": "🔵", "img": "Un traductor universal que convierte palabras (google.com) en números IP (142.250.1.1)."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "SMTP", "english": "Simple Mail Transfer Protocol", "spanish": "Protocolo Simple de Transferencia de Correo", "pin": "🔵", "img": "Un buzón de correo azul con una flecha apuntando hacia afuera (enviar correos)."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "IMAP", "english": "Internet Mail Access Protocol", "spanish": "Protocolo de Acceso a Mensajes de Internet", "pin": "🔵", "img": "Un usuario mirando sus cartas a través del cristal de una oficina postal remota sin llevárselas a casa."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "SIP", "english": "Session Initiation Protocol", "spanish": "Protocolo de Iniciación de Sesión", "pin": "🔵", "img": "Un telefonista digital estableciendo una llamada entre dos personas antes de que empiecen a hablar."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "VoIP", "english": "Voice over IP", "spanish": "Voz sobre IP", "pin": "🔵", "img": "Una onda de voz humana fragmentada en cubos de datos binarios viajando por la red."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "LTE", "english": "Long-Term Evolution", "spanish": "Evolución a Largo Plazo", "pin": "🟠 / 🟡", "img": "Un rayo naranja que conecta una antena celular con un teléfono a velocidades de fibra óptica."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "4G/5G", "english": "Fourth/Fifth Generation", "spanish": "Cuarta y Quinta Generación móvil", "pin": "🟠 / 🟡", "img": "Una onda expansiva que cubre una ciudad entera permitiendo conectar millones de \"cosas\"."},
+      {"block": "BLOQUE 6: CAPA DE APLICACIÓN Y TECNOLOGÍAS MÓVILES", "acronym": "IPTV", "english": "Internet Protocol Television", "spanish": "Televisión por Protocolo de Internet", "pin": "🔵", "img": "Un televisor que recibe su señal a través de un cable de red en lugar de una antena de aire."}
     ];
 
-    const tableBody = document.getElementById('tableBody');
-    const searchInput = document.getElementById('searchInput');
-    const visibleCount = document.getElementById('visibleCount');
-    const totalCount = document.getElementById('totalCount');
-    const noResults = document.getElementById('noResults');
+    let currentFilter = 'ALL';
+    let practiceIndex = 0;
+    let practiceSet = [];
 
-    totalCount.textContent = data.length;
+    function getPinBadges(pinStr) {
+      const pins = [];
+      if (pinStr.includes('🔵')) pins.push({ code: 'APP', color: '#2563eb', bg: '#1e3a8a' });
+      if (pinStr.includes('🟢')) pins.push({ code: 'TRA', color: '#16a34a', bg: '#14532d' });
+      if (pinStr.includes('🔴')) pins.push({ code: 'NET', color: '#dc2626', bg: '#7f1d1d' });
+      if (pinStr.includes('🟠')) pins.push({ code: 'LIN', color: '#ea580c', bg: '#7c2d12' });
+      if (pinStr.includes('🟡')) pins.push({ code: 'PHY', color: '#ca8a04', bg: '#713f12' });
+      return pins;
+    }
 
-    function renderTable(items) {
-      tableBody.innerHTML = '';
-      if (items.length === 0) {
-        noResults.style.display = 'block';
-      } else {
-        noResults.style.display = 'none';
-        items.forEach(item => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td class="acronym">${escapeHtml(item.acronym)}</td>
-            <td>${escapeHtml(item.name)}</td>
-            <td>${escapeHtml(item.desc)}</td>
-          `;
-          tableBody.appendChild(row);
-        });
+    function renderCards(data) {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      if (data.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 3rem; color: var(--text-muted);">No se encontraron acrónimos.</div>';
+        return;
       }
-      visibleCount.textContent = items.length;
+
+      const grouped = {};
+      data.forEach(item => {
+        if (!grouped[item.block]) grouped[item.block] = [];
+        grouped[item.block].push(item);
+      });
+
+      for (const [block, items] of Object.entries(grouped)) {
+        const blockEl = document.createElement('div');
+        blockEl.className = 'block-header';
+        blockEl.textContent = block;
+        container.appendChild(blockEl);
+
+        const grid = document.createElement('div');
+        grid.className = 'cards-grid';
+
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const pins = getPinBadges(item.pin);
+          const pinsHtml = pins.map(p => `<span class="pin-tag" style="background: ${p.bg}; color: #f8fafc; border: 1px solid ${p.color};">${p.code}</span>`).join('');
+
+          card.innerHTML = `
+            <div class="card-header">
+              <span class="acronym-badge">${escapeHtml(item.acronym)}</span>
+              <div class="pins-container">${pinsHtml}</div>
+            </div>
+            <div class="term-english">${escapeHtml(item.english)}</div>
+            <div class="term-spanish">${escapeHtml(item.spanish)}</div>
+            <div class="mnemonic-box">
+              <span>🧠</span>
+              <span><strong>Imagen:</strong> ${escapeHtml(item.img)}</span>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+      }
     }
 
     function filterData() {
-      const query = searchInput.value.toLowerCase().trim();
-      if (!query) {
-        renderTable(data);
-        return;
-      }
-      const filtered = data.filter(item => 
-        item.acronym.toLowerCase().includes(query) ||
-        item.name.toLowerCase().includes(query) ||
-        item.desc.toLowerCase().includes(query)
-      );
-      renderTable(filtered);
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      const filtered = dataset.filter(item => {
+        const matchesQuery = !query || 
+          item.acronym.toLowerCase().includes(query) ||
+          item.english.toLowerCase().includes(query) ||
+          item.spanish.toLowerCase().includes(query) ||
+          item.img.toLowerCase().includes(query);
+
+        const pins = getPinBadges(item.pin).map(p => p.code);
+        const matchesFilter = currentFilter === 'ALL' || pins.includes(currentFilter);
+
+        return matchesQuery && matchesFilter;
+      });
+
+      renderCards(filtered);
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterData();
     }
 
     function escapeHtml(str) {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Carga inicial
-    renderTable(data);
+    function startPractice() {
+      practiceSet = [...dataset].sort(() => Math.random() - 0.5);
+      practiceIndex = 0;
+      document.getElementById('practiceOverlay').classList.add('active');
+      showCard();
+    }
+
+    function closePractice() {
+      document.getElementById('practiceOverlay').classList.remove('active');
+    }
+
+    function showCard() {
+      const cardEl = document.getElementById('flashcard');
+      cardEl.classList.remove('flipped');
+
+      const item = practiceSet[practiceIndex];
+      document.getElementById('cardAcronym').textContent = item.acronym;
+      document.getElementById('cardEnglish').textContent = item.english;
+      document.getElementById('cardSpanish').textContent = item.spanish;
+      document.getElementById('cardMnemonic').textContent = item.img;
+      document.getElementById('practiceProgress').textContent = `${practiceIndex + 1} / ${practiceSet.length}`;
+    }
+
+    function flipCard() {
+      document.getElementById('flashcard').classList.toggle('flipped');
+    }
+
+    function nextCard() {
+      practiceIndex = (practiceIndex + 1) % practiceSet.length;
+      showCard();
+    }
+
+    renderCards(dataset);
   </script>
 </body>
 </html>
